@@ -28,6 +28,6 @@
 - In `README.md` and everything under `docs/`
 - In `package.json` (`author`) and the page metadata
 
-The logo file is `src/assets/logo.png` (currently a placeholder).
+The logo file is `src/assets/logo.png`
 
 © D'SAITECH. All rights reserved.
