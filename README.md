@@ -19,7 +19,7 @@ One player is locked inside. The other holds the only manual.
 
 **A game by D'SAITECH**
 
-[Overview](#overview) &nbsp;•&nbsp; [Quick Start](#quick-start) &nbsp;•&nbsp; [Deployment](#deployment) &nbsp;•&nbsp; [Event Setup](#event-setup) &nbsp;•&nbsp; [Game Design](#game-design) &nbsp;•&nbsp; [Configuration](#configuration) &nbsp;•&nbsp; [Testing](#testing) &nbsp;•&nbsp; [Credits](#credits)
+[Overview](#overview) &nbsp;•&nbsp; [Quick Start](#quick-start) &nbsp;•&nbsp; [Event Setup](#event-setup) &nbsp;•&nbsp; [Game Design](#game-design) &nbsp;•&nbsp; [Configuration](#configuration) &nbsp;•&nbsp; [Testing](#testing) &nbsp;•&nbsp; [Credits](#credits)
 
 </div>
 
@@ -32,16 +32,15 @@ One player is locked inside. The other holds the only manual.
 | 01 | [Overview](#overview) | What the game is and how a run plays out |
 | 02 | [Prerequisites](#prerequisites) | Software and accounts required |
 | 03 | [Quick Start](#quick-start) | Install, test, run locally |
-| 04 | [Deployment](#deployment) | Publish to GitHub and Vercel |
-| 05 | [Event Setup](#event-setup) | QR code, printed manual, booth checklist |
-| 06 | [Project Structure](#project-structure) | Folder and architecture map |
-| 07 | [Game Design](#game-design) | Case codes, the four locks, the clock |
-| 08 | [Configuration](#configuration) | URL parameters, themes, difficulty presets |
-| 09 | [Testing](#testing) | Automated validation and smoke tests |
-| 10 | [Audio, Visuals and Safety](#audio-visuals-and-safety) | Scare director, Web Audio, accessibility |
-| 11 | [Troubleshooting](#troubleshooting) | Symptom, cause, fix |
-| 12 | [Known Limits](#known-limits) | What is proven and what needs on-site checks |
-| 13 | [Credits](#credits) | Who made this |
+| 04 | [Event Setup](#event-setup) | QR code, printed manual, booth checklist |
+| 05 | [Project Structure](#project-structure) | Folder and architecture map |
+| 06 | [Game Design](#game-design) | Case codes, the four locks, the clock |
+| 07 | [Configuration](#configuration) | URL parameters, themes, difficulty presets |
+| 08 | [Testing](#testing) | Automated validation and smoke tests |
+| 09 | [Audio, Visuals and Safety](#audio-visuals-and-safety) | Scare director, Web Audio, accessibility |
+| 10 | [Troubleshooting](#troubleshooting) | Symptom, cause, fix |
+| 11 | [Known Limits](#known-limits) | What is proven and what needs on-site checks |
+| 12 | [Credits](#credits) | Who made this |
 
 ---
 
@@ -141,31 +140,6 @@ npm run dev
 
 ---
 
-## Deployment
-
-### Push to GitHub
-
-```bash
-git init
-git add .
-git commit -m "LOCKDOWN: 4-door escape game by D'SAITECH"
-git branch -M main
-git remote add origin https://github.com/YOUR-USERNAME/lockdown.git
-git push -u origin main
-```
-
-### Deploy on Vercel
-
-1. Import the repository into Vercel.
-2. Set the build command to `npm run build`. This runs `validate.mjs` before the Vite build.
-3. Assign the production domain, for example `lockdown-booth.vercel.app`.
-4. Confirm the service worker cache version is `lockdown-v3`.
-5. On a phone, load the game once online, then switch to airplane mode and verify offline play, including the **THE MANUAL** page.
-
-> [!IMPORTANT]
-> The game must be loaded once online over HTTPS before the PWA can work offline.
-
----
 
 ## Event Setup
 
