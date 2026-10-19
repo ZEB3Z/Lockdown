@@ -6,11 +6,12 @@ src/config.js            clock, strikes, penalty, killer speed (tune here)
 src/core/                rng.js · code.js (case code) · plan.js (code -> run) · run.js (state machine, no DOM)
 src/modules/<id>/        logic.js (pure) · view.js (DOM)
 src/modules/index.js     logic registry        src/modules/views.js  view registry
-src/ui/                  shell.js · visuals.js · glyphs.js (shared SVG art) · dom.js
-src/audio/engine.js      Web Audio synth
+src/ui/                  shell.js · visuals.js · glyphs.js (shared SVG art) · dom.js · flash-limiter.js
+src/audio/               engine.js (facade) · synth.js (core/limiter) · ambience.js · effects.js · stingers.js
+src/scare/               director.js (scheduler, intensity curve, catalogue)
 src/manual/ src/admin/   printed manual builder · answer key page
-tools/validate.mjs       exhaustive validator (also runs in the Vercel build)
-tools/smoke.mjs          jsdom test: every view x every code, full shell flows (win, strikes, timeout, pause, rotate)
+tools/validate.mjs       exhaustive validator (runs in the Vercel build)
+tools/smoke.mjs          jsdom test: sampled codes x 5 doors, full shell flows, flash limiter, themes
 tools/reference.mjs      independent interpreter of the manual text
 ```
 
@@ -23,20 +24,19 @@ export function trace(state, ctx)            // -> { steps: [indexes in correct 
 export const solve = (s, c) => trace(s, c).steps
 export function isStrike(state, ctx, progress, action) // OPTIONAL. Default: action != solve()[progress.length]
 ```
-`view.js`: `export function render(state, el, api)`. Build markup with `<button data-i="n">` and call `bind(el, api)` from `ui/dom.js`. `api.act(i)` returns `'ok'|'strike'|'door'|'win'|'caught'`. A wrong index is a strike; progress is kept.
+`view.js`: `export function render(state, el, api)`. Build markup with `<button data-i="n">` (add `data-reusable="true"` for multi-step buttons) and call `bind(el, api)` from `ui/dom.js`. `api.act(i)` returns `'ok'|'strike'|'door'|'win'|'caught'`.
 
-## Add a module
-1. `logic.js` + `view.js` in `src/modules/<id>/`.
-2. Register in `modules/index.js` and `modules/views.js`; add the id to `CONFIG.doors`.
-3. Add its expected step count in `tools/validate.mjs` and a reference in `tools/reference.mjs` (by someone else).
-4. Add its page in `src/manual/build.js` (and a decoy if wanted).
-5. `npm test` (validate + smoke) must pass. Playtest before it ships.
+Reference implementations:
+- See `src/modules/switch/` for a single-action, time-sensitive lock. Its view sends `api.act({ sw, t })` and its logic exports `isStrike`, `strikeEffect` and `answerText`. Views can use `api.clock()` (active play time, frozen while paused) and `api.sfx(name)`.
+- See `src/modules/dial/` for multi-step draggable safe dial with clue tables.
 
-## Changing a rule
-Edit `trace()` and `RULES` together, update the reference, run `npm run validate`, reprint the manual. The validator fails if the manual lacks a rule line or a branch never fires.
+## Adding a scare to the Scare Director
+1. Add visual markup / CSS in `src/ui/visuals.js` and `src/style.css`. Always use `pointer-events: none` and route flashes through `requestFlash()` in `src/ui/flash-limiter.js`.
+2. Add audio synthesis in `src/audio/effects.js` or `src/audio/stingers.js`.
+3. Register the event in `src/scare/director.js` with intensity triggers and cooldown checks (`canFireMajorScare()`). Never fire during the first 3 seconds of a door.
 
 ## Conventions
 - Rules short, unambiguous, readable under pressure. Clarity beats atmosphere.
 - Seed per module: `makeRng(code + ':' + id)`. Never share a stream.
-- Small bundle: no frameworks, no asset files, no SVG filters or animated blur.
+- Small bundle: no frameworks, no asset files, transforms and opacity only.
 - Test on a real phone before merging anything visual.

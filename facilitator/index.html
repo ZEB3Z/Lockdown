@@ -1,36 +1,99 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><title>LOCKDOWN · Facilitator sheet</title>
-<style>@page{size:A4;margin:10mm}body{font:9.6pt/1.32 Arial,sans-serif;color:#000;margin:0 auto;max-width:190mm;padding:6mm}
-h1{font:bold 18pt "Courier New",monospace;margin:0 0 2mm;border-bottom:3px solid #000} h2{font:bold 10.5pt "Courier New",monospace;margin:3mm 0 1mm;background:#000;color:#fff;padding:.5mm 2mm}
-ul,ol{margin:0 0 0 5mm;padding:0} li{margin:.5mm 0} .cols{columns:2;column-gap:7mm} section{break-inside:avoid}
-.say{border:2px solid #000;padding:2mm;font-style:italic;margin:1mm 0} code{font-family:"Courier New",monospace;font-weight:bold}</style></head><body>
-<h1>LOCKDOWN · FACILITATOR SHEET</h1>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>LOCKDOWN · Facilitator Sheet</title>
+<style>
+@page { size: A4; margin: 10mm; }
+body { font: 9.2pt/1.3 Arial, sans-serif; color: #000; margin: 0 auto; max-width: 190mm; padding: 4mm; }
+h1 { font: bold 16pt "Courier New", monospace; margin: 0 0 2mm; border-bottom: 3px solid #000; }
+h2 { font: bold 10pt "Courier New", monospace; margin: 2.5mm 0 1mm; background: #000; color: #fff; padding: .5mm 2mm; }
+ul, ol { margin: 0 0 0 4.5mm; padding: 0; }
+li { margin: .4mm 0; }
+.cols { columns: 2; column-gap: 6mm; }
+section { break-inside: avoid; margin-bottom: 2mm; }
+.say { border: 2px solid #000; padding: 2mm; font-style: italic; margin: 1mm 0; font-size: 8.8pt; }
+code { font-family: "Courier New", monospace; font-weight: bold; }
+</style>
+</head>
+<body>
+<h1>LOCKDOWN V2 · FACILITATOR SHEET (5 LOCKS · 4 MINUTES)</h1>
 <div class="cols">
-<section><h2>BEFORE DOORS OPEN</h2><ul>
-<li>Open the game URL once on every loaner phone while online (it then works offline).</li>
-<li>Silent mode OFF, volume up, Auto-Lock off on loaners. Visitors: ask them to do the same.</li>
-<li>One printed manual (A4, 9 pages, stapled) per station. Spare copies in a folder.</li>
-<li>QR code at the booth points at the game URL. Keep a printed copy of the URL too.</li></ul></section>
-<section><h2>START A RUN</h2><ol>
-<li>Pick two players. <b>Escapee</b> holds the phone. <b>Handler</b> holds the manual.</li>
-<li>Escapee scans the QR, taps <code>ENTER THE HOUSE</code>. Warning screen: read it aloud if asked.</li>
-<li>Handler must not look at the phone. Sit face to face, phone toward the Escapee's chest.</li>
-<li>The clock starts at once. Do not coach during the run.</li></ol></section>
-<section><h2>20-SECOND BRIEFING</h2><div class="say">"You are locked in a killer's house. One of you holds the phone: the Escapee. The other holds the manual: the Handler. You cannot see each other's screen, so talk fast and describe exactly. Three mistakes and he finds you. Silent mode off, volume up. Ready? Tap ENTER."</div></section>
-<section><h2>RESET BETWEEN PAIRS</h2><ul>
-<li>End screen: tap <code>PLAY AGAIN</code> / <code>TRY AGAIN</code>. A new case code is generated.</li>
-<li>Swap roles if they want. Hand the manual to the next Handler, page 1 on top.</li>
-<li>Phone frozen or blank? Reload the page. It works offline once loaded.</li></ul></section>
-<section><h2>STUCK PAIR (do not give answers)</h2><ol>
-<li>"Escapee: read me the plate name on the lock." / "Handler: find that page."</li>
-<li>"Read the four case code boxes again: letter, serial, last, color."</li>
-<li>"Describe the shapes, do not guess names."</li>
-<li>Still stuck after 45s on one lock: use the answer key, give <b>one hint only</b>, then step back.</li></ol></section>
-<section><h2>ANSWER KEY</h2><ul>
-<li>Open <code>/admin/</code> on a staff phone. Type the case code shown on the screen. It lists every door's answer.</li>
-<li>Or open <code>/admin/?case=K7-3-RED</code>. Do not show this page to visitors.</li>
-<li>Game with a fixed case: <code>/?case=K7-3-RED&amp;debug</code> (shows the answer on screen. Staff testing only).</li></ul></section>
-<section><h2>SAFETY</h2><ul>
-<li>Start screen warns about jump scares and flicker. <b>Reduced effects</b> checkbox removes flashing, motion and the big scare.</li>
-<li>If anyone looks distressed: stop, let them leave. No pressure to finish.</li>
-<li>Note for tuning: time each run, where they got stuck, what was unclear. Do not record people.</li></ul></section>
-</div></body></html>
+
+<section>
+  <h2>BEFORE DOORS OPEN</h2>
+  <ul>
+    <li>Open the game URL once on every loaner phone while online (PWA caches for offline play).</li>
+    <li>Silent mode OFF, volume up to 80%, Auto-Lock disabled on all loaners.</li>
+    <li>One printed manual (A4, 13 pages, stapled) per station. Keep spare copies ready.</li>
+    <li>Booth QR code points directly to the deployed web app URL.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>START A RUN</h2>
+  <ol>
+    <li>Pick two players: <b>Escapee</b> holds the phone; <b>Handler</b> holds the manual.</li>
+    <li>Escapee scans QR or opens loaner phone, selects theme or gentle mode if needed.</li>
+    <li>Escapee taps <code>ENTER THE HOUSE</code>. Timer begins immediately (4:00 on normal).</li>
+    <li>Handler must <b>never look at the phone</b>. Sit face-to-face. No outside coaching.</li>
+  </ol>
+</section>
+
+<section>
+  <h2>20-SECOND BRIEFING SCRIPT</h2>
+  <div class="say">
+    "You are locked inside a killer's house. You have four minutes to escape through five locked doors. One of you is the Escapee holding the phone; one is the Handler with the case file. You cannot look at each other's materials—talk fast, describe what you see, and give clear orders. Three strikes and he finds you. Sound up. Tap ENTER."
+  </div>
+</section>
+
+<section>
+  <h2>RESET BETWEEN PAIRS</h2>
+  <ul>
+    <li>End screen: tap <code>PLAY AGAIN</code> or <code>TRY AGAIN</code>. Generates a fresh case code.</li>
+    <li>Swap roles if players wish. Hand the manual to the new Handler, page 1 on top.</li>
+    <li>Phone frozen or glitching? Hard refresh the browser; offline cache reloads in under 1 second.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>STUCK PAIR COACHING (DO NOT GIVE ANSWERS)</h2>
+  <ol>
+    <li><b>General:</b> "Escapee: read the PLATE NAME." / "Handler: find that exact page."</li>
+    <li><b>Tumbler:</b> "Read pin colors and symbols left to right. Check the skull rule first."</li>
+    <li><b>Glyphs:</b> "Describe the four symbols cleanly. Do not invent names."</li>
+    <li><b>Fuse Box:</b> "Count the wires top to bottom. State which have warning tags."</li>
+    <li><b>Execution Switch:</b> "Escapee: read all six switch letters, left to right. Handler: find the switch with the case LETTER, then add SERIAL to the COLOR start number. Escapee: watch the number and flip as it appears."</li>
+    <li><b>Dial Safe:</b> "Escapee: name the three clues on the wall. Handler: check clue order by color, then tables and the odd-last twist."</li>
+    <li>Still stuck after 45s on one lock: use staff answer key to give <b>one subtle hint</b>.</li>
+  </ol>
+</section>
+
+<section>
+  <h2>THEMES &amp; GENTLE MODE</h2>
+  <ul>
+    <li><b>Themes:</b> One-tap <code>LIGHTS OUT / LIGHTS ON</code> toggle on start screen and HUD. Lights On is a dim, sickly yellow lit room. Toggling does not disturb the clock. URL: <code>?theme=light</code> or <code>?theme=dark</code>.</li>
+    <li><b>Gentle Mode:</b> Checkbox on start screen or URL <code>?gentle=1</code>. Completely disables strobes, full-screen blackouts, and softens stingers for light-sensitive guests.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>ANSWER KEY &amp; DEBUGGING</h2>
+  <ul>
+    <li>Open <code>/admin/</code> on a staff phone. Enter the 4-part case code from the Escapee's screen.</li>
+    <li>Direct URL: <code>/admin/?case=K7-3-RED</code>. Shows exact solutions for all 5 doors.</li>
+    <li>Test run with on-screen answers: <code>/?case=K7-3-RED&amp;debug</code> (staff use only).</li>
+  </ul>
+</section>
+
+<section>
+  <h2>GUEST SAFETY &amp; DISTRESS</h2>
+  <ul>
+    <li>Start screen displays prominent photosensitivity and jump scare warnings.</li>
+    <li><b>If a guest is scared or asks to stop:</b> Stop immediately. Take the device, offer water, guide them out of the booth. Never pressure anyone to finish.</li>
+  </ul>
+</section>
+
+</div>
+</body>
+</html>

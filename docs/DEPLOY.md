@@ -1,47 +1,48 @@
-# Deploy, QR, print
+# Deploy, QR, print (v2)
 
 ## 1. Push to GitHub
 ```
-git init && git add . && git commit -m "LOCKDOWN"
-git branch -M main
-git remote add origin https://github.com/<you>/lockdown.git
-git push -u origin main
+git add . && git commit -m "LOCKDOWN v2: 5 doors, themes, scare director"
+git push origin main
 ```
 Commit `package-lock.json`. `node_modules/` and `dist/` are ignored.
 
 ## 2. Vercel
 1. vercel.com > Add New > Project > import the repo.
 2. Framework preset: **Vite** (auto). Build command: `npm run build` (runs `npm run validate` first, so broken rules cannot ship). Output: `dist`.
-3. Deploy. Rename the project to something short (`lockdown-booth` gives `lockdown-booth.vercel.app`): shorter URL = simpler QR.
-4. Every push to `main` redeploys. Branches get preview URLs: test risky changes there.
-5. **Freeze deploys** before the event (PLAYTEST.md, Day 3). After the freeze, only push a blocker fix, then re-test on a phone.
+3. Deploy. Production URL: `lockdown-booth.vercel.app`.
+4. Every push to `main` redeploys. Pushes that fail validation stay on the prior good build.
+5. **Freeze deploys** before booth day (PLAYTEST.md, Day 3).
 
-Run `npm test` before every push (validator + jsdom smoke test). Supported browsers: iOS Safari 14.5+, Android Chrome 84+ (flex `gap`, module scripts).
+Supported browsers: iOS Safari 14.5+, Android Chrome 84+ (flex `gap`, module scripts).
 
-Verify on a real phone: `/` plays, `/manual/` prints, `/admin/?case=K7-3-RED` shows an answer, `/facilitator/` loads.
-Offline: load `/` once online, switch to airplane mode, reload: it must still start (needs the deployed HTTPS URL or localhost).
+Verify on a real phone:
+- `/` plays 5 doors (4:00 clock), theme toggle works.
+- `/manual/` prints (13 pages).
+- `/admin/?case=K7-3-RED` shows solutions for all 5 doors.
+- `/facilitator/` loads with 5-door briefing.
+- Offline: load `/` once online, switch to airplane mode, reload: starts offline via PWA cache `lockdown-v2`.
 
 ## 3. QR code
 ```
 npm run qr -- https://lockdown-booth.vercel.app/
 ```
-Writes `qr/lockdown-qr.png` (1200px) and `.svg`. Error correction Q, 4-module quiet zone.
-- Encode the **root URL only** (no `?case=`, never `/admin/`).
-- Print at **5 x 5 cm minimum**; 8 cm on a booth sign is better. Black on white, matte paper (no glare), keep the white border.
-- Test with two phones (one low-end Android, one iPhone) from the distance a visitor will stand. Print the short URL under it as a backup.
+Writes `qr/lockdown-qr.png` (1200px) and `.svg`.
+- Encode the root URL only.
+- Print at 5 x 5 cm minimum; 8 cm on booth signage. Black on white, matte paper.
+- Test with two phones from visitor standing distance.
 
 ## 4. Print the manual
-Open `/manual/` in Chrome or Edge, Print:
+Open `/manual/` in Chrome or Edge, Print (`Ctrl + P`):
 - Paper **A4**, scale **100%**, margins **Default**, headers and footers **off**.
-- Black and white (default page): Background graphics **off**. Color (`/manual/?color=1`): Background graphics **on**.
-- Must come out as **9 pages**. If 10+, a page overflowed: tell me which.
-- Single-sided, staple top-left, one per station plus spares. Sleeves or lamination survive an evening of use.
-- Check one copy at arm's length in dim light, especially the glyph columns (page 7).
-- Print `/facilitator/` (one page). Keep PDF copies of both on a phone or USB.
+- Black & white: Background graphics **off**. Color (`/manual/?color=1`): Background graphics **on**.
+- Must come out as **13 pages**.
+- Single-sided, staple top-left, 1 per station plus spares.
+- Print `/facilitator/` (one page) for the staff table.
 
 ## 5. Event day checklist
-- [ ] Deployed build is the one you tested. QR printed and tested on 2 phones.
-- [ ] 2 loaner phones: opened `/` once online, volume up, silent off, Auto-Lock off, brightness up.
+- [ ] Deployed build is the tested v2 build. QR printed and scanned.
+- [ ] 2 loaner phones: opened `/` once online, volume up, silent off, Auto-Lock off.
 - [ ] Staff phone has `/admin/` and `/manual/` opened once (cached for offline).
-- [ ] Manuals: 1 per station + 2 spares, page 1 on top. Facilitator sheet at the booth.
-- [ ] Charger or power bank for loaners. A timer or watch for staff.
+- [ ] Manuals: 13 pages, 1 per station + 2 spares. Facilitator sheet on the table.
+- [ ] Power banks, phone chargers, staff stopwatch.

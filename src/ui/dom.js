@@ -1,7 +1,14 @@
 export function mark(btn, r) {
-  if (r === 'strike') { btn.classList.add('bad'); setTimeout(() => btn.classList.remove('bad'), 450); }
-  else if (r !== 'ignored' && r !== 'caught') btn.classList.add('done');
+  if (r === 'strike') {
+    btn.classList.add('bad');
+    setTimeout(() => btn.classList.remove('bad'), 450);
+  } else if (r !== 'ignored' && r !== 'caught') {
+    if (r !== 'ok' || !btn.dataset.reusable) {
+      btn.classList.add('done');
+    }
+  }
 }
+
 /** Views only build markup with <button data-i="n">; this wires taps to api.act. */
 export function bind(el, api) {
   el.onclick = (e) => {

@@ -1,37 +1,66 @@
-@page{size:A4;margin:14mm}
-*{box-sizing:border-box}
-body{margin:0;background:#cfcfcf;font:12pt/1.4 Georgia,"Times New Roman",serif;color:#000}
-.bar{position:sticky;top:0;background:#111;color:#fff;padding:8px 12px;font:14px sans-serif;display:flex;gap:16px;align-items:center;z-index:2}
-.bar a,.bar button{color:#fff} .bar button{background:#b3121a;border:0;padding:6px 12px;font-weight:bold}
-.page{width:210mm;min-height:297mm;margin:8mm auto;padding:14mm;background:#fff;position:relative;box-shadow:0 0 8px rgba(0,0,0,.4)}
-.page footer{position:absolute;bottom:8mm;left:0;right:0;text-align:center;font:10pt monospace}
-h1{font:bold 54pt/1 "Courier New",monospace;letter-spacing:.05em;margin:.3em 0}
-h2{font:bold 20pt "Courier New",monospace;margin:0 0 6mm;letter-spacing:.06em}
-h2.plate{display:inline-block;border:3px solid #000;padding:.15em .5em;font-size:26pt}
-h3{font:bold 11pt "Courier New",monospace;margin:0 0 4mm} h3 small{font-weight:normal}
-.cover{text-align:center;padding-top:50mm} .stamp{display:inline-block;border:3px solid #000;padding:2mm 6mm;font:bold 16pt "Courier New",monospace;transform:rotate(-3deg)}
-.sub{font:12pt "Courier New",monospace;letter-spacing:.15em}
-.note{font-style:italic;font-size:10.5pt;margin:2mm 0 6mm} .note.big{font-size:16pt;margin-top:30mm}
-.rules p{margin:.55em 0;font-size:13pt} .rules .ind{margin-left:1.6em}
-b{font-weight:bold}
-.example{margin-top:8mm;border:2px solid #000;padding:4mm 5mm;page-break-inside:avoid}
-.example p{margin:.3em 0;font-size:11pt}
-.how li{margin:.7em 0;font-size:13pt}
-.boxes{display:flex;gap:4mm;margin:8mm 0} .boxes div{flex:1;border:2px solid #000;text-align:center;font:bold 22pt "Courier New",monospace;padding:3mm}
-.boxes small{display:block;font-size:9pt;font-weight:normal}
-.idx{border-collapse:collapse;width:100%;margin-bottom:8mm;font-size:13pt} .idx th,.idx td{border:2px solid #000;padding:2.5mm 4mm;text-align:left}
-.lbl{font:bold 10pt "Courier New",monospace;margin:6mm 0 1mm}
-.cols{display:flex;gap:3mm} .col{flex:1;border:2px solid #000;padding:1.5mm;text-align:center;break-inside:avoid}
-.col h4{margin:0 0 1mm;font:bold 11pt "Courier New",monospace}
-.g{display:flex;align-items:center;gap:2mm;padding:.8mm 0;border-top:1px solid #999;font:8pt "Courier New",monospace;color:#000} .g svg{flex:none}
-.grow{display:flex;align-items:center;gap:2mm;margin:2mm 0;font-size:11pt} .grow svg{margin:0}
-.glyph{color:#000;display:inline-block}
-.color .page{background:#f6f1e7} .color h1,.color h2,.color .note{color:#8c0f15} .color h2.plate{border-color:#8c0f15} .color b{color:#8c0f15}
-.color .example,.color .col,.color .idx th,.color .idx td,.color .boxes div{border-color:#8c0f15}
-@media print{
-  body{background:#fff} .bar{display:none}
-  .page{margin:0;width:auto;min-height:0;box-shadow:none;padding:0;break-after:page;page-break-after:always;height:268mm}
-  .page:last-child{break-after:auto;page-break-after:auto}
-  .page footer{bottom:0}
-  .color .page{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+@page { size: A4; margin: 14mm; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #cfcfcf; font: 11pt/1.35 Georgia, "Times New Roman", serif; color: #000; }
+.bar { position: sticky; top: 0; background: #111; color: #fff; padding: 8px 12px; font: 14px sans-serif; display: flex; gap: 16px; align-items: center; z-index: 2; }
+.bar a, .bar button { color: #fff; }
+.bar button { background: #b3121a; border: 0; padding: 6px 12px; font-weight: bold; cursor: pointer; }
+.page { width: 210mm; min-height: 297mm; margin: 8mm auto; padding: 12mm 14mm; background: #fff; position: relative; box-shadow: 0 0 8px rgba(0, 0, 0, .4); }
+.page footer { position: absolute; bottom: 8mm; left: 0; right: 0; text-align: center; font: 10pt monospace; }
+h1 { font: bold 50pt/1 "Courier New", monospace; letter-spacing: .05em; margin: .3em 0; }
+h2 { font: bold 18pt "Courier New", monospace; margin: 0 0 5mm; letter-spacing: .06em; }
+h2.plate { display: inline-block; border: 3px solid #000; padding: .15em .5em; font-size: 22pt; }
+h3 { font: bold 10.5pt "Courier New", monospace; margin: 0 0 3mm; }
+h3 small { font-weight: normal; }
+.cover { text-align: center; padding-top: 45mm; }
+.stamp { display: inline-block; border: 3px solid #000; padding: 2mm 6mm; font: bold 16pt "Courier New", monospace; transform: rotate(-3deg); }
+.sub { font: 12pt "Courier New", monospace; letter-spacing: .15em; }
+.note { font-style: italic; font-size: 10pt; margin: 2mm 0 4mm; }
+.note.big { font-size: 16pt; margin-top: 25mm; }
+.rules p { margin: .45em 0; font-size: 11.5pt; }
+.rules .ind { margin-left: 1.4em; }
+b { font-weight: bold; }
+.example { margin-top: 5mm; border: 2px solid #000; padding: 3mm 4mm; page-break-inside: avoid; }
+.example p { margin: .25em 0; font-size: 10pt; }
+.how li { margin: .6em 0; font-size: 11.5pt; }
+.boxes { display: flex; gap: 4mm; margin: 6mm 0; }
+.boxes div { flex: 1; border: 2px solid #000; text-align: center; font: bold 20pt "Courier New", monospace; padding: 2.5mm; }
+.boxes small { display: block; font-size: 8.5pt; font-weight: normal; }
+.idx { border-collapse: collapse; width: 100%; margin-bottom: 6mm; font-size: 11.5pt; }
+.idx th, .idx td { border: 2px solid #000; padding: 2mm 4mm; text-align: left; }
+.lbl { font: bold 9.5pt "Courier New", monospace; margin: 4mm 0 1mm; }
+
+/* Columns for glyph pad */
+.cols { display: flex; gap: 3mm; }
+.col { flex: 1; border: 2px solid #000; padding: 1.5mm; text-align: center; break-inside: avoid; }
+.col h4 { margin: 0 0 1mm; font: bold 10pt "Courier New", monospace; }
+.g { display: flex; align-items: center; gap: 2mm; padding: .6mm 0; border-top: 1px solid #999; font: 7.5pt "Courier New", monospace; color: #000; }
+.g svg { flex: none; }
+.grow { display: flex; align-items: center; gap: 2mm; margin: 1.5mm 0; font-size: 10pt; }
+.grow svg { margin: 0; }
+.glyph { color: #000; display: inline-block; }
+
+/* Execution Switch tables */
+.sw-tables { display: grid; grid-template-columns: 1fr;max-width: 60mm; gap: 4mm; margin: 2mm 0 4mm; align-items: start; }
+
+/* Dial Tables Grid */
+.dial-tables-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3mm; margin: 2mm 0 4mm; }
+.dtbl { border-collapse: collapse; width: 100%; font-size: 8.5pt; font-family: "Courier New", monospace; }
+.dtbl th, .dtbl td { border: 1px solid #000; padding: 1mm 2mm; text-align: left; }
+.dtbl th { background: #eee; font-weight: bold; text-align: center; font-size: 8.5pt; }
+
+/* Color theme for manual */
+.color .page { background: #f6f1e7; }
+.color h1, .color h2, .color .note { color: #8c0f15; }
+.color h2.plate { border-color: #8c0f15; }
+.color b { color: #8c0f15; }
+.color .example, .color .col, .color .idx th, .color .idx td, .color .boxes div, .color .dtbl th, .color .dtbl td { border-color: #8c0f15; }
+.color .dtbl th { background: #ebdccb; color: #8c0f15; }
+
+@media print {
+  body { background: #fff; }
+  .bar { display: none; }
+  .page { margin: 0; width: auto; min-height: 0; box-shadow: none; padding: 0; break-after: page; page-break-after: always; height: 268mm; }
+  .page:last-child { break-after: auto; page-break-after: auto; }
+  .page footer { bottom: 0; }
+  .color .page { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }

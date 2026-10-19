@@ -1,6 +1,6 @@
 // INDEPENDENT reference interpreter of the printed manual (see each module's RULES text).
 // Written separately from src/modules/*/logic.js on purpose: different structure, own code parsing.
-// Teammate rule: whoever writes logic.js must NOT write this file. If the two disagree, the manual text is ambiguous.
+// If logic.js and this file disagree, the manual text is ambiguous.
 import { COLUMNS } from '../src/modules/glyphs/columns.js';
 
 const parse = (code) => {
@@ -51,4 +51,51 @@ export function refFuse(state, code) {
   }
 }
 
-export const REF = { tumbler: refTumbler, glyphs: refGlyphs, fuse: refFuse };
+// Written from the printed rule text, not from logic.js.
+export function refSwitch(state, code) {
+  const { letter, serial, color } = parse(code);
+  const pos = state.letters.filter((L) => L === letter).length === 1 ? state.letters.indexOf(letter) + 1 : -1;
+  if (pos < 0) throw new Error('refSwitch: letter not on panel exactly once');
+  const start = { RED: 2, BLUE: 4, YELLOW: 7, WHITE: 10 }[color];
+  return [(pos - 1) * 100 + start + serial];
+}
+
+export function refDial(state, code) {
+  const { serial, last, color } = parse(code);
+  const orderMap = {
+    RED: [0, 1, 2],
+    BLUE: [2, 1, 0],
+    YELLOW: [1, 0, 2],
+    WHITE: [2, 0, 1],
+  };
+  const order = orderMap[color];
+
+  const tables = {
+    clock: { 1: 5, 2: 11, 3: 17, 4: 23, 5: 29, 6: 35, 7: 2, 8: 8, 9: 14, 10: 20, 11: 26, 12: 32 },
+    painting: { crow: 7, moth: 15, key: 22, eye: 28, house: 34, dagger: 39 },
+    candles: { 1: 3, 2: 9, 3: 18, 4: 24, 5: 31, 6: 37 },
+    calendar: { 4: 6, 7: 12, 13: 19, 19: 25, 23: 30, 31: 38 },
+    portrait: { 1: 4, 2: 13, 3: 21, 4: 33 },
+    handprints: { 1: 1, 2: 10, 3: 16, 4: 27, 5: 36 },
+  };
+
+  const turns = order.map((idx) => {
+    const clue = state.clues[idx];
+    const base = tables[clue.type][clue.val];
+    if (base === undefined) throw new Error(`refDial: unknown clue ${clue.type} / ${clue.val}`);
+    if (last % 2 === 1) {
+      return (base + serial) % 40;
+    }
+    return base % 40;
+  });
+
+  return turns;
+}
+
+export const REF = {
+  tumbler: refTumbler,
+  glyphs: refGlyphs,
+  fuse: refFuse,
+  switch: refSwitch,
+  dial: refDial,
+};
