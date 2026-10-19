@@ -8,6 +8,7 @@ import * as audio from '../audio/engine.js';
 import * as V from './visuals.js';
 import * as H from './haptics.js';
 import * as director from '../scare/director.js';
+import { mountTearDown } from '../secret/tear.js';
 
 // Studio credit used across the game, manual, docs and answer key.
 export const STUDIO = "D'SAITECH";
@@ -127,6 +128,8 @@ function showMenu(app) {
     audio.unlock();
     play(app);
   };
+
+  mountTearDown(app, () => showMenu(app));
 }
 
 function showCredits(app) {
