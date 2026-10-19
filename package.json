@@ -1,0 +1,20 @@
+{
+  "name": "lockdown",
+  "private": true,
+  "version": "0.2.0",
+  "type": "module",
+  "scripts": {
+    "validate": "node tools/validate.mjs",
+    "smoke": "node tools/smoke.mjs",
+    "test": "node tools/validate.mjs && node tools/smoke.mjs",
+    "dev": "vite",
+    "build": "node tools/validate.mjs && vite build",
+    "preview": "vite preview",
+    "qr": "node tools/qr.mjs"
+  },
+  "devDependencies": {
+    "jsdom": "^26.1.0",
+    "qrcode": "^1.5.4",
+    "vite": "^5.4.0"
+  }
+}
