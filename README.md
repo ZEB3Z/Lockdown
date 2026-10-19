@@ -312,6 +312,4 @@ Built with [Vite](https://vitejs.dev) and vanilla JavaScript. Every sound is syn
 
 The credit appears in the game (main menu, credits screen and both end screens), in the printed manual (cover, running footer and the closing thank-you), on the facilitator sheet, on the answer key, and in every document under `docs/`. Full list in [CREDITS.md](CREDITS.md).
 
-**Replacing the placeholder logo:** overwrite `src/assets/logo.png` with the real logo (square or near-square, transparent PNG works best; 512 px or larger). If it is another format, add it as `logo.svg`, `logo.webp` or `logo.jpg` in the same folder and delete `logo.png`. The game, the manual, the facilitator sheet and this README all pick it up; nothing else needs editing. Then run `node tools/manual-pdf.mjs` to refresh the printable PDFs.
-
 © D'SAITECH. All rights reserved.
