@@ -1,166 +1,233 @@
-<p align="center"><img src="src/assets/logo.png" alt="D'SAITECH logo" width="140"></p>
-<p align="center"><b>A game by D'SAITECH</b></p>
+<div align="center">
 
-```text
-    __    ____  ________ __ ____  ____ _       ___   __
-   / /   / __ \/ ____/ //_// __ \/ __ \ |     / / | / /
-  / /   / / / / /   / ,<  / / / / / / / | /| / /  |/ / 
- / /___/ /_/ / /___/ /| |/ /_/ / /_/ /| |/ |/ / /|  /  
-/_____/\____/\____/_/ |_/_____/\____/ |__/|__/_/ |_/
+<img src="src/assets/logo.png" alt="D'SAITECH logo" width="140">
+
+# LOCKDOWN
+
+### Blackthorn Manor
+
+**A two-player asymmetric escape game for live events.**
+One player is locked inside. The other holds the only manual.
+
+<br>
+
+![Status](https://img.shields.io/badge/status-v3%20(4%20locks)-8c0f15?style=for-the-badge)
+![Stack](https://img.shields.io/badge/stack-Vite%20%2B%20Vanilla%20JS-1a1a1a?style=for-the-badge)
+![Backend](https://img.shields.io/badge/backend-none-1a1a1a?style=for-the-badge)
+![Payload](https://img.shields.io/badge/payload-~24%20KB%20gzip-1a1a1a?style=for-the-badge)
+![PWA](https://img.shields.io/badge/PWA-offline%20ready-8c0f15?style=for-the-badge)
+
+**A game by D'SAITECH**
+
+[Overview](#overview) &nbsp;•&nbsp; [Quick Start](#quick-start) &nbsp;•&nbsp; [Deployment](#deployment) &nbsp;•&nbsp; [Event Setup](#event-setup) &nbsp;•&nbsp; [Game Design](#game-design) &nbsp;•&nbsp; [Configuration](#configuration) &nbsp;•&nbsp; [Testing](#testing) &nbsp;•&nbsp; [Credits](#credits)
+
+</div>
+
+---
+
+## Table of Contents
+
+| # | Section | Description |
+|:-:|---|---|
+| 01 | [Overview](#overview) | What the game is and how a run plays out |
+| 02 | [Prerequisites](#prerequisites) | Software and accounts required |
+| 03 | [Quick Start](#quick-start) | Install, test, run locally |
+| 04 | [Deployment](#deployment) | Publish to GitHub and Vercel |
+| 05 | [Event Setup](#event-setup) | QR code, printed manual, booth checklist |
+| 06 | [Project Structure](#project-structure) | Folder and architecture map |
+| 07 | [Game Design](#game-design) | Case codes, the four locks, the clock |
+| 08 | [Configuration](#configuration) | URL parameters, themes, difficulty presets |
+| 09 | [Testing](#testing) | Automated validation and smoke tests |
+| 10 | [Audio, Visuals and Safety](#audio-visuals-and-safety) | Scare director, Web Audio, accessibility |
+| 11 | [Troubleshooting](#troubleshooting) | Symptom, cause, fix |
+| 12 | [Known Limits](#known-limits) | What is proven and what needs on-site checks |
+| 13 | [Credits](#credits) | Who made this |
+
+---
+
+## Overview
+
+**LOCKDOWN** is an asymmetric cooperative game in the style of *Keep Talking and Nobody Explodes*. It needs no server, no accounts, and no networking. Two players share one phone and one printed manual.
+
+### Roles
+
+| Role | Holds | Sees | Responsibility |
+|---|---|---|---|
+| **The Escapee** | A phone, opened by QR code | The four locks, case code, clock, killer proximity | Describes what is on screen and operates the locks on instruction |
+| **The Handler** | A printed A4 manual (5 pages) | The manual only, **never the screen** | Reads the rules, asks questions, gives one instruction at a time |
+
+### Anatomy of a Run
+
+```mermaid
+flowchart LR
+    A([Scan QR]) --> B[Main Menu]
+    B --> C[Case Code Generated]
+    C --> D[Door 1]
+    D --> E[Door 2]
+    E --> F[Door 3]
+    F --> G[Door 4]
+    G --> H{{ESCAPED}}
+    D -. 3 strikes or 0:00 .-> X{{HE FOUND YOU}}
+    E -. 3 strikes or 0:00 .-> X
+    F -. 3 strikes or 0:00 .-> X
+    G -. 3 strikes or 0:00 .-> X
 ```
 
-> 🕯️ **CASE FILE · BLACKTHORN MANOR** · *A two-player slasher escape for a university Halloween booth.*
-> One of you is locked inside. The other holds the only manual. **He is already in the house.**
+1. The Escapee scans the QR code. The **main menu** offers **ENTER THE HOUSE**, **THE MANUAL**, and **CREDITS**. Tapping **ENTER THE HOUSE** generates a **case code** such as `K7-3-RED` and starts the clock at **4:00** (240 seconds on normal difficulty).
+2. Four locked doors appear in an order shuffled per case code: **BRASS TUMBLER**, **GLYPH PAD**, **FUSE BOX**, and **EXECUTION SWITCH**.
+3. At each door the Escapee reads the **plate name** aloud. The Handler finds that page. The manual rules, combined with the case code and on-screen details, yield exactly one correct solution.
+4. A wrong action is a **strike**. Each strike costs **15 seconds** and moves the killer closer with an audio burst. **Three strikes, or zero seconds, ends the run.**
+5. Clearing all four doors shows **ESCAPED** with the remaining time in large numerals. Otherwise the screen reads **HE FOUND YOU**. Both end screens offer **PLAY AGAIN / TRY AGAIN** and **MAIN MENU**, along with a thank-you from D'SAITECH.
 
-![status](https://img.shields.io/badge/status-v3%20(4%20locks)-8c0f15) ![stack](https://img.shields.io/badge/stack-Vite%20%2B%20vanilla%20JS-050505) ![backend](https://img.shields.io/badge/backend-none-050505) ![by](https://img.shields.io/badge/by-D'SAITECH-8c0f15) ![bundle](https://img.shields.io/badge/game%20payload-~24%20KB%20gzip-050505)
+> [!NOTE]
+> A **MENU** button in the HUD lets a player leave a run at any time. The game asks for confirmation first, and the clock is held while the question is open.
 
----
+### Key Properties
 
-## ☠ CONTENTS OF THE CASE FILE
-
-| File | What's inside |
+| Property | Detail |
 |---|---|
-| [00 · The premise](#-file-00--the-premise) | What the game is and how a run plays out |
-| [01 · What you need](#-file-01--what-you-need-from-scratch) | Software and accounts, installed from zero |
-| [02 · Ritual I: summon it locally](#-file-02--ritual-i-summon-it-on-your-computer) | Install, validate, test, run, play |
-| [03 · Ritual II: bind it to GitHub](#-file-03--ritual-ii-bind-it-to-github) | Git push instructions |
-| [04 · Ritual III: release it on Vercel](#-file-04--ritual-iii-release-it-on-vercel) | Deploy, verify, PWA offline test |
-| [05 · Ritual IV: the QR code](#-file-05--ritual-iv-the-qr-code) | Generate and print |
-| [06 · Ritual V: print the manual](#-file-06--ritual-v-print-the-manual) | A4, 5 pages, B&W or color |
-| [07 · Booth day](#-file-07--booth-day) | Checklist and the 20-second briefing |
-| [08 · Anatomy](#-file-08--anatomy-of-the-house) | Folder and architecture map |
-| [09 · The rules inside the rules](#-file-09--the-rules-inside-the-rules) | Case code, the four locks, clock |
-| [10 · Dials and switches](#-file-10--dials-and-switches) | URL parameters, themes, gentle mode, config |
-| [11 · Proving it works](#-file-11--proving-it-works) | Automated validation and smoke tests |
-| [12 · Sound, light, scare director and safety](#-file-12--sound-light-scare-director-and-safety) | Scare director, Web Audio, flash limiter |
-| [13 · Troubleshooting](#-file-13--troubleshooting) | Symptom, cause, fix |
-| [14 · Known limits](#-file-14--known-limits-read-this) | Hardware and audio audit boundaries |
-| [15 · Credits](#-file-15--thank-you-for-playing-and-credits) | Thank you for playing, and who made this |
+| **Deterministic** | 3,888 case codes. Every puzzle is generated from the case code by a seeded RNG. |
+| **Provably solvable** | A validator exhaustively proves that every seed has exactly one valid solution. |
+| **Rules, not answers** | The manual contains rules only. No fixed answers are printed anywhere. |
+| **Decoy plates** | Five look-alike plates (**IRON TUMBLER**, **NUMBER PAD**, **GAS VALVE**, **RELAY BOARD**, **VAULT WHEEL**) share pages with real doors. Players must communicate plate names exactly. |
+| **Zero backend** | No servers, no accounts, no tracking. Fully offline after first load. |
 
 ---
 
-## 🩸 FILE 00 · THE PREMISE
+## Prerequisites
 
-**LOCKDOWN** is an asymmetric co-op game in the style of *Keep Talking and Nobody Explodes*. No servers, no accounts, no networking. Two players, one phone, one printed manual.
-
-| Role | Holds | Sees | Does |
+| Tool | Version | Purpose | Link |
 |---|---|---|---|
-| 🔦 **The Escapee** | A phone (opened by QR code) | The four locks, case code, clock, killer proximity | Describes what is on screen. Operates locks based on instructions. |
-| 📖 **The Handler** | A printed A4 manual (5 pages) | Only the manual, **never the screen** | Reads rules, asks questions, gives one instruction at a time. |
+| **Node.js** | LTS 20 or newer | Build and test tooling | [nodejs.org](https://nodejs.org) |
+| **Git** | Any recent version | Version control | [git-scm.com](https://git-scm.com) |
+| **GitHub account** | n/a | Source hosting | [github.com](https://github.com) |
+| **Vercel account** | n/a | Production hosting | [vercel.com](https://vercel.com) |
 
-**A run, start to finish**
+Verify your Node installation:
 
-1. Escapee scans the QR code. The **main menu** offers **ENTER THE HOUSE**, **THE MANUAL** and **CREDITS**. They tap **ENTER THE HOUSE**. A **case code** like `K7-3-RED` appears. The clock starts at **4:00** (240 seconds on normal).
-2. Four locked doors in an order shuffled per case code: **BRASS TUMBLER**, **GLYPH PAD**, **FUSE BOX**, **EXECUTION SWITCH**.
-3. At each door the Escapee reads the **plate name** aloud. The Handler finds that page. The manual rules, plus case code and screen items, yield exactly one correct solution.
-4. A wrong action is a **strike**. Each strike costs **15 seconds** and moves the killer closer with an audio burst. **Three strikes, or zero seconds, and he finds you.**
-5. Escape through all four doors: **ESCAPED**, with remaining time in big numerals. Otherwise: **HE FOUND YOU**. Both end screens offer **PLAY AGAIN / TRY AGAIN** and **MAIN MENU**, plus a thank-you from D'SAITECH. A **MENU** button in the HUD lets a player leave a run at any time (after a confirmation; the clock is held while it is asked).
-
-**3,888 deterministic case codes:** every puzzle is generated from the case code by a seeded RNG. The manual contains rules, not fixed answers. A validator script exhaustively proves all 3,888 seeds have exactly one valid solution.
-
-**Decoys:** the manual includes 5 decoy plates (**IRON TUMBLER**, **NUMBER PAD**, **GAS VALVE**, **RELAY BOARD**, **VAULT WHEEL**), each sharing a page with a real door. Escapee and Handler must communicate plate names exactly.
+```bash
+node -v
+npm -v
+```
 
 ---
 
-## 🗝 FILE 01 · WHAT YOU NEED (FROM SCRATCH)
-
-Four free tools:
-1. **Node.js** (LTS 20 or newer): [nodejs.org](https://nodejs.org). Verify with `node -v` and `npm -v`.
-2. **Git**: [git-scm.com](https://git-scm.com) or GitHub Desktop.
-3. **GitHub account**: [github.com](https://github.com).
-4. **Vercel account**: [vercel.com](https://vercel.com).
-
----
-
-## 🕯 FILE 02 · RITUAL I: SUMMON IT ON YOUR COMPUTER
+## Quick Start
 
 ```bash
 # 1. Install dependencies
 npm install
 
-# 2. Run exhaustive tests (validator + smoke)
+# 2. Run the full test suite (validator + smoke tests)
 npm test
 
-# 3. Start local dev server
+# 3. Start the local dev server
 npm run dev
 ```
 
-Key testing URLs:
-- `http://localhost:5173/` : Main menu, then a standard run
-- `http://localhost:5173/?case=K7-3-RED` : Fixed seed run
-- `http://localhost:5173/?case=K7-3-RED&debug` : Fixed seed with on-screen answer (staff only)
-- `http://localhost:5173/?stats` : Shows per-door clearance times, theme, gentle mode, and quality status on end screen
-- `http://localhost:5173/?theme=light` : Staff shortcut to test "Lights On" sickly yellow theme
-- `http://localhost:5173/?gentle=1` : Staff shortcut for Gentle Mode
-- `http://localhost:5173/manual/` : Rendered 5-page manual (has a **MAIN MENU** link back to the game)
-- `http://localhost:5173/admin/?case=K7-3-RED` : 4-module answer key
-- `http://localhost:5173/facilitator/` : 1-page booth briefing sheet
+### Local URLs
+
+| URL | Purpose |
+|---|---|
+| `http://localhost:5173/` | Main menu, then a standard run |
+| `http://localhost:5173/?case=K7-3-RED` | Run with a fixed seed |
+| `http://localhost:5173/?case=K7-3-RED&debug` | Fixed seed with on-screen answer *(staff only)* |
+| `http://localhost:5173/?stats` | End screen with per-door clearance times, theme, gentle mode, and quality status |
+| `http://localhost:5173/?theme=light` | Preview the "Lights On" theme |
+| `http://localhost:5173/?gentle=1` | Preview Gentle Mode |
+| `http://localhost:5173/manual/` | Rendered 5-page manual, with a **MAIN MENU** link back to the game |
+| `http://localhost:5173/admin/?case=K7-3-RED` | 4-module answer key |
+| `http://localhost:5173/facilitator/` | 1-page booth briefing sheet |
 
 ---
 
-## 🔪 FILE 03 · RITUAL II: BIND IT TO GITHUB
+## Deployment
+
+### Push to GitHub
 
 ```bash
 git init
 git add .
-git commit -m "LOCKDOWN: 4-door horror escape by D'SAITECH"
+git commit -m "LOCKDOWN: 4-door escape game by D'SAITECH"
 git branch -M main
 git remote add origin https://github.com/YOUR-USERNAME/lockdown.git
 git push -u origin main
 ```
 
+### Deploy on Vercel
+
+1. Import the repository into Vercel.
+2. Set the build command to `npm run build`. This runs `validate.mjs` before the Vite build.
+3. Assign the production domain, for example `lockdown-booth.vercel.app`.
+4. Confirm the service worker cache version is `lockdown-v3`.
+5. On a phone, load the game once online, then switch to airplane mode and verify offline play, including the **THE MANUAL** page.
+
+> [!IMPORTANT]
+> The game must be loaded once online over HTTPS before the PWA can work offline.
+
 ---
 
-## 🩻 FILE 04 · RITUAL III: RELEASE IT ON VERCEL
+## Event Setup
 
-1. Import repo into Vercel.
-2. Build command override: `npm run build` (runs `validate.mjs` before Vite build).
-3. Production domain: `lockdown-booth.vercel.app`.
-4. Service worker cache version is `lockdown-v3`. Verify offline mode on phone via airplane mode, including the **THE MANUAL** page.
-
----
-
-## 🔦 FILE 05 · RITUAL IV: THE QR CODE
+### QR Code
 
 ```bash
 npm run qr -- https://lockdown-booth.vercel.app/
 ```
-Writes `qr/lockdown-qr.png` (1200px) and `qr/lockdown-qr.svg`. Print at 8 cm minimum on matte cardstock.
 
----
+This writes `qr/lockdown-qr.png` (1200 px) and `qr/lockdown-qr.svg`. Print at a **minimum of 8 cm** on matte cardstock.
 
-## 📜 FILE 06 · RITUAL V: PRINT THE MANUAL
+### Printing the Handler's Manual
 
-Open `https://YOUR-DOMAIN/manual/` in Chrome or Edge, print (`Ctrl + P`):
-- Paper **A4**, Scale **100%**, Margins **Default** (the page sets its own margins, so *None* also works), Headers and Footers **OFF**.
-- Black and White: Background graphics OFF. Color (`/manual/?color=1`): Background graphics ON.
-- Page count: **5 pages**, all A4. Clean page breaks; no door splits across pages.
-- Ready-made PDFs are in `docs/print/` (`LOCKDOWN-Handlers-Manual-BW.pdf` and `-Color.pdf`). Regenerate them with `node tools/manual-pdf.mjs` after any rule or layout change (see the file header for the one extra dependency).
+Open `https://YOUR-DOMAIN/manual/` in Chrome or Edge and print with `Ctrl + P`.
+
+| Setting | Value |
+|---|---|
+| Paper | **A4** |
+| Scale | **100%** |
+| Margins | **Default** (the page sets its own, so *None* also works) |
+| Headers and footers | **Off** |
+| Black and white | Background graphics **off** |
+| Color (`/manual/?color=1`) | Background graphics **on** |
+
+Ready-made PDFs are in `docs/print/` (`LOCKDOWN-Handlers-Manual-BW.pdf` and `-Color.pdf`). Regenerate them after any rule or layout change:
+
+```bash
+node tools/manual-pdf.mjs
+```
+
+See the file header for the one extra dependency it needs.
+
+**Manual contents (5 pages, all A4, no door split across pages)**
 
 | Page | Content |
-|---|---|
+|:-:|---|
 | 1 | Cover with the D'SAITECH logo, what the game is, the two roles, the clock and strikes |
 | 2 | How to play as the Handler, the case code explained, page finder, quick reference, talking tips |
-| 3 | **BRASS TUMBLER** + IRON TUMBLER *(look-alike)* + **FUSE BOX** |
-| 4 | **GLYPH PAD** (6 columns of 6 glyphs) + NUMBER PAD and VAULT WHEEL *(look-alikes)* |
-| 5 | **EXECUTION SWITCH** (with a COLOR start table) + GAS VALVE and RELAY BOARD *(look-alikes)* + thank you and credits |
+| 3 | **BRASS TUMBLER**, IRON TUMBLER *(look-alike)*, **FUSE BOX** |
+| 4 | **GLYPH PAD** (6 columns of 6 glyphs), NUMBER PAD and VAULT WHEEL *(look-alikes)* |
+| 5 | **EXECUTION SWITCH** (with a COLOR start table), GAS VALVE and RELAY BOARD *(look-alikes)*, thank-you and credits |
 
-If you edit rule text and a page spills past its frame, that page gets a red outline on screen at `/manual/`. Shorten it or move a block in `LAYOUT` (`src/manual/build.js`).
+> [!TIP]
+> If edited rule text spills past a page frame, that page gets a red outline at `/manual/`. Shorten the text or move a block in `LAYOUT` (`src/manual/build.js`).
 
 Also print `/facilitator/` (1 page) for the booth table.
 
+### Booth Checklist
+
+- [ ] 2 loaner phones preloaded with the game, volume at 80%, silent switch off, Auto-Lock disabled
+- [ ] 1 printed manual (5 pages) per station, plus 2 spare copies
+- [ ] Facilitator sheet on the table
+- [ ] QR code printed at 8 cm or larger
+- [ ] Offline mode verified on every loaner phone
+
+### 20-Second Briefing
+
+> *"You are locked in a killer's house. You have four minutes to escape through four locked doors. One of you is the Escapee holding the phone; one is the Handler with the case file. You cannot look at each other's materials. Talk fast, describe what you see, and give clear orders. Three strikes and he finds you. Sound up. Tap ENTER."*
+
 ---
 
-## 🎃 FILE 07 · BOOTH DAY
-
-- 2 loaner phones preloaded with game, volume at 80%, silent switch off, Auto-Lock disabled.
-- 1 printed manual (5 pages) per station + 2 spare copies. Facilitator sheet on table.
-- 20-second briefing:
-  > *"You are locked in a killer's house. You have four minutes to escape through four locked doors. One of you is the Escapee holding the phone; one is the Handler with the case file. You cannot look at each other's materials—talk fast, describe what you see, and give clear orders. Three strikes and he finds you. Sound up. Tap ENTER."*
-
----
-
-## 🏚 FILE 08 · ANATOMY OF THE HOUSE
+## Project Structure
 
 ```text
 lockdown/
@@ -168,148 +235,228 @@ lockdown/
 ├─ vite.config.js
 ├─ vercel.json
 ├─ public/
-│  ├─ sw.js                 PWA cache v3 (offline support)
+│  ├─ sw.js                  PWA cache v3 (offline support)
 │  └─ manifest.webmanifest
 ├─ src/
-│  ├─ config.js             4:00 clock, 4 doors, difficulty presets
-│  ├─ main.js               entry point
+│  ├─ config.js              4:00 clock, 4 doors, difficulty presets
+│  ├─ main.js                entry point
+│  ├─ style.css              dark and light themes, scare layers, lock views
 │  ├─ assets/
-│  │  ├─ logo.png           D'SAITECH logo (placeholder: replace this file)
-│  │  └─ logo-url.js        resolves the logo for the game and the manual
-│  ├─ style.css             dark and light themes, scare layers, lock views
+│  │  ├─ logo.png            D'SAITECH logo (replace this file to rebrand)
+│  │  └─ logo-url.js         resolves the logo for the game and the manual
 │  ├─ core/
-│  │  ├─ rng.js             seeded PRNG (mulberry32 + xmur3)
-│  │  ├─ code.js            format, parse, 3,888 cases
-│  │  ├─ plan.js            case code -> 4 shuffled doors
-│  │  └─ run.js             state machine (remaining, proximity, strikes)
+│  │  ├─ rng.js              seeded PRNG (mulberry32 + xmur3)
+│  │  ├─ code.js             format, parse, 3,888 cases
+│  │  ├─ plan.js             case code to 4 shuffled doors
+│  │  └─ run.js              state machine (remaining, proximity, strikes)
 │  ├─ modules/
-│  │  ├─ tumbler/           logic.js + view.js
-│  │  ├─ glyphs/            logic.js + view.js + columns.js
-│  │  ├─ fuse/              logic.js + view.js
-│  │  └─ switch/            logic.js + view.js
+│  │  ├─ tumbler/            logic.js + view.js
+│  │  ├─ glyphs/             logic.js + view.js + columns.js
+│  │  ├─ fuse/               logic.js + view.js
+│  │  └─ switch/             logic.js + view.js
 │  ├─ ui/
-│  │  ├─ shell.js           main menu, credits, HUD, exit/pause/rotate holds, end screens
-│  │  ├─ visuals.js         scare overlays (glass slam, face, blackout, blood)
-│  │  ├─ flash-limiter.js   photosensitivity safety rail (max 3 flashes/sec)
-│  │  ├─ haptics.js         heartbeat vibration pulses + strike buzz
-│  │  ├─ glyphs.js          SVG glyph definitions
-│  │  └─ dom.js             button binding (with reusable support)
+│  │  ├─ shell.js            main menu, credits, HUD, exit/pause/rotate holds, end screens
+│  │  ├─ visuals.js          scare overlays (glass slam, face, blackout, blood)
+│  │  ├─ flash-limiter.js    photosensitivity safety rail (max 3 flashes/sec)
+│  │  ├─ haptics.js          heartbeat vibration pulses and strike buzz
+│  │  ├─ glyphs.js           SVG glyph definitions
+│  │  └─ dom.js              button binding (with reusable support)
 │  ├─ audio/
-│  │  ├─ synth.js           core oscillators, noise buffers, master compressor
-│  │  ├─ ambience.js        drone, footsteps, heartbeat, heavy breathing
-│  │  ├─ effects.js         creaks, slams, whispers, music box, phone ring
-│  │  ├─ stingers.js        6 normalized jump-scare stingers + tinnitus
-│  │  └─ engine.js          unified audio facade
+│  │  ├─ synth.js            core oscillators, noise buffers, master compressor
+│  │  ├─ ambience.js         drone, footsteps, heartbeat, heavy breathing
+│  │  ├─ effects.js          creaks, slams, whispers, music box, phone ring
+│  │  ├─ stingers.js         6 normalized stingers plus tinnitus
+│  │  └─ engine.js           unified audio facade
 │  ├─ scare/
-│  │  └─ director.js        intensity curve, beat scheduler, cooldowns
-│  ├─ manual/               5-page A4 manual builder + manual.css
-│  └─ admin/                4-module answer key
+│  │  └─ director.js         intensity curve, beat scheduler, cooldowns
+│  ├─ manual/                5-page A4 manual builder + manual.css
+│  └─ admin/                 4-module answer key
 ├─ tools/
-│  ├─ validate.mjs          exhaustive 3,888 case validator
-│  ├─ reference.mjs         independent rule reference interpreter
-│  ├─ smoke.mjs             jsdom end-to-end smoke test
-│  ├─ manual-pdf.mjs        regenerates docs/print/*.pdf (A4)
-│  └─ qr.mjs                QR code generator
-├─ docs/                    DEPLOY.md, PLAYTEST.md, CONTRIBUTING.md, playtest-log.csv
-│  └─ print/                ready-to-print manual PDFs (A4)
-└─ CREDITS.md               who made this
+│  ├─ validate.mjs           exhaustive 3,888-case validator
+│  ├─ reference.mjs          independent rule reference interpreter
+│  ├─ smoke.mjs              jsdom end-to-end smoke test
+│  ├─ manual-pdf.mjs         regenerates docs/print/*.pdf (A4)
+│  └─ qr.mjs                 QR code generator
+├─ docs/                     DEPLOY.md, PLAYTEST.md, CONTRIBUTING.md, playtest-log.csv
+│  └─ print/                 ready-to-print manual PDFs (A4)
+└─ CREDITS.md                full credits
 ```
 
 ---
 
-## 🧩 FILE 09 · THE RULES INSIDE THE RULES
+## Game Design
 
 ### Case Code Format
-`K7-3-RED` = LETTER (12 options) · SERIAL (1-9) · LAST (1-9) · COLOR (4 options). Total: 3,888 codes.
+
+`K7-3-RED` is composed of four parts, giving **3,888** unique codes.
+
+| Part | Example | Options |
+|---|:-:|:-:|
+| LETTER | `K` | 12 |
+| SERIAL | `7` | 1 to 9 |
+| LAST | `3` | 1 to 9 |
+| COLOR | `RED` | 4 |
 
 ### The Four Locks
-1. **BRASS TUMBLER**: 5 pins. Skull pin picked last. Count N matching COLOR. LAST digit odd = L to R, even = R to L. Pick order based on N.
-2. **GLYPH PAD**: 4 glyphs. Locate the single matching column among 6 in manual. SERIAL odd = top to bottom, even = bottom to top.
-3. **FUSE BOX**: 3 to 6 wires. Cut rules branch on wire count, warning tags, LAST digit parity, vowel letter, and case color.
-4. **EXECUTION SWITCH**: A panel of 6 lettered switches and a looping countdown (20 down to 0, then restart). Which switch: the one showing the case LETTER (always on the panel). Which number: COLOR start (RED 2, BLUE 4, YELLOW 7, WHITE 10) plus SERIAL. The Escapee flips the switch while the countdown shows that number (window about 1.35 seconds: 0.1s early grace, 0.25s late grace). A wrong switch or a mistimed flip is a strike: 15s off the clock, an electrical arc and wail, and the killer's footsteps close in.
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+#### 1. Brass Tumbler
+Five pins. The skull pin is always picked last. Count **N**, the number of pins matching the case COLOR. If LAST is odd, work left to right. If LAST is even, work right to left. The pick order is determined by **N**.
+
+</td>
+<td width="50%" valign="top">
+
+#### 2. Glyph Pad
+Four glyphs on screen. Locate the single manual column, out of six, that contains all of them. If SERIAL is odd, press top to bottom. If SERIAL is even, press bottom to top.
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+#### 3. Fuse Box
+Three to six wires. Cut rules branch on wire count, warning tags, LAST digit parity, vowel letter, and case color.
+
+</td>
+<td width="50%" valign="top">
+
+#### 4. Execution Switch
+Six lettered switches and a looping countdown (20 down to 0, then restart). The correct switch is the one showing the case LETTER, which is always on the panel. The correct number is the COLOR start (RED 2, BLUE 4, YELLOW 7, WHITE 10) plus SERIAL. Flip the switch while the countdown shows that number.
+
+</td>
+</tr>
+</table>
+
+**Execution Switch timing:** the window is roughly 1.35 seconds, with 0.1 s of early grace and 0.25 s of late grace. A wrong switch or a mistimed flip is a strike: 15 s off the clock, an electrical arc and wail, and the killer's footsteps close in.
 
 ---
 
-## 🎛 FILE 10 · DIALS AND SWITCHES
+## Configuration
 
 ### URL Parameters
-- `?case=K7-3-RED`: Fix case code
-- `?debug`: Shows answer in HUD and detailed end-screen statistics (staff only)
-- `?stats`: Logs per-module timings, theme, gentle mode, and quality status on end screen
-- `?theme=light|dark`: Overrides theme (`light` = Lights On, `dark` = Lights Out)
-- `?gentle=1`: Enables Gentle Mode
-- `?difficulty=easy|normal|hard`: Swaps preset
 
-### Presets (`src/config.js`)
+| Parameter | Effect |
+|---|---|
+| `?case=K7-3-RED` | Fix the case code |
+| `?debug` | Show the answer in the HUD and detailed end-screen statistics *(staff only)* |
+| `?stats` | Log per-module timings, theme, gentle mode, and quality status on the end screen |
+| `?theme=light\|dark` | Override the theme. `light` is "Lights On", `dark` is "Lights Out" |
+| `?gentle=1` | Enable Gentle Mode |
+| `?difficulty=easy\|normal\|hard` | Swap the difficulty preset |
+
+### Difficulty Presets
+
+Defined in `src/config.js`.
+
 | Preset | Total Time | Strike Penalty | Killer Speed |
-|---|---|---|---|
+|---|:-:|:-:|:-:|
 | `easy` | 300 s (5:00) | 10 s | 0.9 |
 | `normal` | 240 s (4:00) | 15 s | 1.0 |
 | `hard` | 200 s (3:20) | 20 s | 1.1 |
 
 ---
 
-## 🧪 FILE 11 · PROVING IT WORKS
+## Testing
 
-- `npm run validate`: Tests all 3,888 case codes across all four modules against independent reference interpreter, verifies no dead rules, statistical sanity, and checks that the 5-page manual contains every rule line verbatim plus the D'SAITECH credit and logo.
-- `npm run smoke`: Simulates perfect play, 3-strike failure, the main menu, the credits screen and every route back to the menu in JSDOM, verifies flash limiter safety rules, and confirms mid-game theme toggling does not touch the clock.
-- `npm run build`: Validates then produces production build in `dist/`.
-
----
-
-## 🔊 FILE 12 · SOUND, LIGHT, SCARE DIRECTOR AND SAFETY
-
-- **Scare Director (`src/scare/director.js`)**: Orchestrates atmospheric scares based on intensity (proximity, strikes, door number, time remaining). Features guaranteed beats:
-  - Door 1 (~4s): Subtle house alive event (whisper + peripheral shadow).
-  - Door 3: Hard scare (hand slam on glass, spreading cracks).
-  - Door 4: Fake-out rattle followed 3.8s later by killer silhouette behind glass.
-  - Door 4 (final door): after the fake-out, a corner lurker settles in.
-  - Final 20s: Final surge scare.
-- **Safety Rails**:
-  - Flash limiter utility (`src/ui/flash-limiter.js`): Enforces max 3 flashes per second anywhere in the game.
-  - Master Dynamics Compressor in Web Audio engine protects hearing from piercing audio peaks.
-  - Gentle Mode: Accessible via checkbox on start screen or `?gentle=1`. Eliminates all full strobes, blackouts, lunges, and softens audio stingers.
-  - No scare ever covers puzzle text/controls for >0.6s; all scare layers have `pointer-events: none`.
-  - Scares never trigger in the first 3s of a new door so the Escapee can read the plate name.
-- **Adaptive Quality Guard**: Measures frame times during play; if 95th percentile exceeds 24 ms for 3 seconds, automatically disables film grain and heavy SVG filters, logging degradation in end-screen stats.
-- **Themes**:
-  - Dark ("Lights Out"): Pitch black, cold flashlight whites, blood red accents.
-  - Light ("Lights On"): Dim sickly yellow bulb, peeling aged wallpaper, dark ochre surfaces, exposed feel.
-  - Both themes pass WCAG AA contrast standards.
+| Command | What it does |
+|---|---|
+| `npm run validate` | Tests all 3,888 case codes across all four modules against an independent reference interpreter. Verifies there are no dead rules, runs statistical sanity checks, and confirms the 5-page manual contains every rule line verbatim plus the D'SAITECH credit and logo. |
+| `npm run smoke` | Simulates perfect play and a 3-strike failure in JSDOM. Covers the main menu, the credits screen, and every route back to the menu. Verifies flash limiter rules and confirms that mid-game theme toggling does not affect the clock. |
+| `npm run build` | Validates, then produces the production build in `dist/`. |
+| `npm test` | Runs the validator and the smoke test together. |
 
 ---
 
-## 🧯 FILE 13 · TROUBLESHOOTING
+## Audio, Visuals and Safety
 
-- `npm test` fails: Inspect failing case code in error log.
-- Audio silent: Mobile browsers require tapping `ENTER THE HOUSE` to unlock Web Audio. On iOS, verify physical silent switch is toggled off.
-- Vibration missing: Expected on iOS Safari (Apple does not support Web Vibration API).
-- PWA offline reload: Ensure game was loaded once online over HTTPS.
+### Scare Director
+
+`src/scare/director.js` orchestrates atmospheric events from an intensity curve driven by proximity, strikes, door number, and time remaining.
+
+| Moment | Guaranteed beat |
+|---|---|
+| Door 1, about 4 s in | Subtle ambient event: a whisper and a peripheral shadow |
+| Door 3 | Hard scare: a hand slams on the glass and cracks spread |
+| Door 4 | Fake-out rattle, followed 3.8 s later by a killer silhouette behind the glass |
+| Door 4, after the fake-out | A corner lurker settles in |
+| Final 20 seconds | Final surge |
+
+### Safety Rails
+
+| Safeguard | Behavior |
+|---|---|
+| **Flash limiter** (`src/ui/flash-limiter.js`) | Enforces a maximum of 3 flashes per second anywhere in the game |
+| **Master compressor** | A Web Audio dynamics compressor protects hearing from piercing peaks |
+| **Gentle Mode** | Available from a checkbox on the start screen or `?gentle=1`. Removes all full strobes, blackouts, and lunges, and softens audio stingers |
+| **Readability guarantee** | No scare covers puzzle text or controls for more than 0.6 s. All scare layers use `pointer-events: none` |
+| **Grace period** | No scare triggers in the first 3 s of a new door, so the Escapee can read the plate name |
+| **Adaptive quality guard** | Measures frame times during play. If the 95th percentile exceeds 24 ms for 3 seconds, film grain and heavy SVG filters are disabled automatically and the degradation is logged in end-screen stats |
+
+### Themes
+
+| Theme | Look | Accessibility |
+|---|---|---|
+| **Dark** ("Lights Out") | Pitch black, cold flashlight whites, blood red accents | WCAG AA |
+| **Light** ("Lights On") | Dim yellow bulb, aged wallpaper, dark ochre surfaces | WCAG AA |
 
 ---
 
-## ⚠ FILE 14 · KNOWN LIMITS (READ THIS)
+## Troubleshooting
 
-**Automated Proofs:**
-- Mathematical determinism and single-solution guarantee across all 3,888 seeds for all four modules.
-- Independent reference implementation concordance.
-- 5-page A4 manual print structure, with a page-overflow guard on `/manual/`.
-
-**Requires On-Site Hardware Verification:**
-- Audio levels on real mobile phone speakers vs wired headphones (conduct the scare audit in `docs/PLAYTEST.md`).
-- Touch target accuracy on physical low-end Android screens under 360px viewport width.
-- Booth ambient lighting impact on physical A4 manual readability.
+| Symptom | Cause | Fix |
+|---|---|---|
+| `npm test` fails | A case code violates a rule or the manual drifted from the rules | Inspect the failing case code in the error log |
+| Audio is silent | Mobile browsers require a tap to unlock Web Audio | Tap **ENTER THE HOUSE**. On iOS, also check that the physical silent switch is off |
+| No vibration | iOS Safari does not support the Web Vibration API | Expected behavior. No fix needed |
+| PWA does not reload offline | The game was never loaded online over HTTPS | Load the game once online, then retry |
 
 ---
 
-## 🕯 FILE 15 · THANK YOU FOR PLAYING, AND CREDITS
+## Known Limits
 
-<p align="center"><img src="src/assets/logo.png" alt="D'SAITECH logo" width="110"></p>
+### Proven by Automated Tests
+
+- Mathematical determinism and a single-solution guarantee across all 3,888 seeds for all four modules
+- Concordance with an independent reference implementation
+- 5-page A4 manual print structure, with a page-overflow guard on `/manual/`
+
+### Requires On-Site Hardware Verification
+
+- Audio levels on real phone speakers versus wired headphones (run the scare audit in `docs/PLAYTEST.md`)
+- Touch target accuracy on low-end Android screens under 360 px viewport width
+- Effect of booth ambient lighting on the readability of the printed A4 manual
+
+---
+
+## Credits
+
+<div align="center">
+
+<img src="src/assets/logo.png" alt="D'SAITECH logo" width="110">
 
 **LOCKDOWN · Blackthorn Manor is a game by D'SAITECH.**
-Game design, code, sound, scares, puzzle rules and the Handler's manual: D'SAITECH.
+
+</div>
+
+| Role | Name |
+|---|---|
+| **Studio** | D'SAITECH |
+| **Main Developer** | **D'SAITECH Secretary - Ericksson Brutas** |
+| **Scope** | Game design, code, sound, puzzle rules, and the Handler's manual |
+
 Built with [Vite](https://vitejs.dev) and vanilla JavaScript. Every sound is synthesized live with the Web Audio API. No servers, no accounts, no tracking.
 
-The credit appears in the game (main menu, credits screen and both end screens), in the printed manual (cover, running footer and the closing thank-you), on the facilitator sheet, on the answer key, and in every document under `docs/`. Full list in [CREDITS.md](CREDITS.md).
+The credit appears in the game (main menu, credits screen, and both end screens), in the printed manual (cover, running footer, and closing thank-you), on the facilitator sheet, on the answer key, and in every document under `docs/`. The full list is in [CREDITS.md](CREDITS.md).
+
+<div align="center">
+
+<br>
+
+**Thank you for playing.**
 
 © D'SAITECH. All rights reserved.
+
+</div>
