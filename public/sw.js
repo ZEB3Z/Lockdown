@@ -1,4 +1,4 @@
-const V = 'lockdown-v2-switch'; // bump to evict old caches after a redeploy
+const V = 'lockdown-v3'; // bump to evict old caches after a redeploy
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', (e) => e.waitUntil(
   caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== V).map((k) => caches.delete(k)))).then(() => self.clients.claim())));

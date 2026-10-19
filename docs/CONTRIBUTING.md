@@ -1,17 +1,21 @@
 # Contributor guide
 
+LOCKDOWN · Blackthorn Manor is a game by D'SAITECH (see [CREDITS.md](../CREDITS.md)).
+
 ## Folders
 ```
 src/config.js            clock, strikes, penalty, killer speed (tune here)
 src/core/                rng.js · code.js (case code) · plan.js (code -> run) · run.js (state machine, no DOM)
 src/modules/<id>/        logic.js (pure) · view.js (DOM)
 src/modules/index.js     logic registry        src/modules/views.js  view registry
-src/ui/                  shell.js · visuals.js · glyphs.js (shared SVG art) · dom.js · flash-limiter.js
+src/ui/                  shell.js (main menu, credits, run, end screens) · visuals.js · glyphs.js (shared SVG art) · dom.js · flash-limiter.js
 src/audio/               engine.js (facade) · synth.js (core/limiter) · ambience.js · effects.js · stingers.js
 src/scare/               director.js (scheduler, intensity curve, catalogue)
-src/manual/ src/admin/   printed manual builder · answer key page
+src/manual/ src/admin/   printed manual builder (5 A4 pages) · answer key page
+src/assets/logo.png      D'SAITECH logo (placeholder: overwrite it); logo-url.js resolves it
 tools/validate.mjs       exhaustive validator (runs in the Vercel build)
-tools/smoke.mjs          jsdom test: sampled codes x 5 doors, full shell flows, flash limiter, themes
+tools/smoke.mjs          jsdom test: sampled codes x 4 doors, menu/credits/exit flows, full shell flows, flash limiter, themes
+tools/manual-pdf.mjs     regenerates docs/print/*.pdf (needs Playwright, see the file header)
 tools/reference.mjs      independent interpreter of the manual text
 ```
 
@@ -28,7 +32,7 @@ export function isStrike(state, ctx, progress, action) // OPTIONAL. Default: act
 
 Reference implementations:
 - See `src/modules/switch/` for a single-action, time-sensitive lock. Its view sends `api.act({ sw, t })` and its logic exports `isStrike`, `strikeEffect` and `answerText`. Views can use `api.clock()` (active play time, frozen while paused) and `api.sfx(name)`.
-- See `src/modules/dial/` for multi-step draggable safe dial with clue tables.
+- See `src/modules/tumbler/` or `src/modules/glyphs/` for multi-step locks (an ordered list of taps).
 
 ## Adding a scare to the Scare Director
 1. Add visual markup / CSS in `src/ui/visuals.js` and `src/style.css`. Always use `pointer-events: none` and route flashes through `requestFlash()` in `src/ui/flash-limiter.js`.
@@ -38,5 +42,7 @@ Reference implementations:
 ## Conventions
 - Rules short, unambiguous, readable under pressure. Clarity beats atmosphere.
 - Seed per module: `makeRng(code + ':' + id)`. Never share a stream.
-- Small bundle: no frameworks, no asset files, transforms and opacity only.
+- Small bundle: no frameworks, no asset files besides the logo, transforms and opacity only.
+- Manual pages are fixed A4 frames. After editing rules or layout run `node tools/manual-pdf.mjs`; it refuses to write a PDF if any page overflows or the page count changes. Update `LAYOUT` in `src/manual/build.js` to move blocks between pages.
+- Keep the D'SAITECH credit on every player-facing or printed surface.
 - Test on a real phone before merging anything visual.

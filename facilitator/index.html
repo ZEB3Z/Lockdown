@@ -2,11 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>LOCKDOWN · Facilitator Sheet</title>
+<title>LOCKDOWN · Facilitator Sheet · D'SAITECH</title>
+<meta name="author" content="D'SAITECH">
 <style>
 @page { size: A4; margin: 10mm; }
 body { font: 9.2pt/1.3 Arial, sans-serif; color: #000; margin: 0 auto; max-width: 190mm; padding: 4mm; }
-h1 { font: bold 16pt "Courier New", monospace; margin: 0 0 2mm; border-bottom: 3px solid #000; }
+h1 { font: bold 16pt "Courier New", monospace; margin: 0 0 2mm; border-bottom: 3px solid #000; display: flex; align-items: center; gap: 3mm; }
+h1 img { width: 11mm; height: 11mm; object-fit: contain; }
+.credit { margin-top: 3mm; border-top: 2px solid #000; padding-top: 1.5mm; font: 8pt "Courier New", monospace; text-align: center; letter-spacing: .06em; }
 h2 { font: bold 10pt "Courier New", monospace; margin: 2.5mm 0 1mm; background: #000; color: #fff; padding: .5mm 2mm; }
 ul, ol { margin: 0 0 0 4.5mm; padding: 0; }
 li { margin: .4mm 0; }
@@ -17,7 +20,7 @@ code { font-family: "Courier New", monospace; font-weight: bold; }
 </style>
 </head>
 <body>
-<h1>LOCKDOWN V2 · FACILITATOR SHEET (5 LOCKS · 4 MINUTES)</h1>
+<h1><img src="/src/assets/logo.png" alt="D'SAITECH logo">LOCKDOWN · FACILITATOR SHEET (4 LOCKS · 4 MINUTES)</h1>
 <div class="cols">
 
 <section>
@@ -25,7 +28,7 @@ code { font-family: "Courier New", monospace; font-weight: bold; }
   <ul>
     <li>Open the game URL once on every loaner phone while online (PWA caches for offline play).</li>
     <li>Silent mode OFF, volume up to 80%, Auto-Lock disabled on all loaners.</li>
-    <li>One printed manual (A4, 13 pages, stapled) per station. Keep spare copies ready.</li>
+    <li>One printed manual (A4, 5 pages, stapled) per station. Keep spare copies ready.</li>
     <li>Booth QR code points directly to the deployed web app URL.</li>
   </ul>
 </section>
@@ -34,8 +37,8 @@ code { font-family: "Courier New", monospace; font-weight: bold; }
   <h2>START A RUN</h2>
   <ol>
     <li>Pick two players: <b>Escapee</b> holds the phone; <b>Handler</b> holds the manual.</li>
-    <li>Escapee scans QR or opens loaner phone, selects theme or gentle mode if needed.</li>
-    <li>Escapee taps <code>ENTER THE HOUSE</code>. Timer begins immediately (4:00 on normal).</li>
+    <li>Escapee scans QR or opens loaner phone. On the main menu they pick theme or gentle mode if needed.</li>
+    <li>Escapee taps <code>ENTER THE HOUSE</code> on the main menu. Timer begins immediately (4:00 on normal). <code>THE MANUAL</code> opens the digital manual; it has a <code>MAIN MENU</code> link back.</li>
     <li>Handler must <b>never look at the phone</b>. Sit face-to-face. No outside coaching.</li>
   </ol>
 </section>
@@ -43,14 +46,14 @@ code { font-family: "Courier New", monospace; font-weight: bold; }
 <section>
   <h2>20-SECOND BRIEFING SCRIPT</h2>
   <div class="say">
-    "You are locked inside a killer's house. You have four minutes to escape through five locked doors. One of you is the Escapee holding the phone; one is the Handler with the case file. You cannot look at each other's materials—talk fast, describe what you see, and give clear orders. Three strikes and he finds you. Sound up. Tap ENTER."
+    "You are locked inside a killer's house. You have four minutes to escape through four locked doors. One of you is the Escapee holding the phone; one is the Handler with the case file. You cannot look at each other's materials—talk fast, describe what you see, and give clear orders. Three strikes and he finds you. Sound up. Tap ENTER."
   </div>
 </section>
 
 <section>
   <h2>RESET BETWEEN PAIRS</h2>
   <ul>
-    <li>End screen: tap <code>PLAY AGAIN</code> or <code>TRY AGAIN</code>. Generates a fresh case code.</li>
+    <li>End screen: tap <code>PLAY AGAIN</code> / <code>TRY AGAIN</code> for a fresh case code, or <code>MAIN MENU</code> to reset to the start. The <code>MENU</code> button in the HUD leaves a run in progress (asks first, clock held).</li>
     <li>Swap roles if players wish. Hand the manual to the new Handler, page 1 on top.</li>
     <li>Phone frozen or glitching? Hard refresh the browser; offline cache reloads in under 1 second.</li>
   </ul>
@@ -64,7 +67,6 @@ code { font-family: "Courier New", monospace; font-weight: bold; }
     <li><b>Glyphs:</b> "Describe the four symbols cleanly. Do not invent names."</li>
     <li><b>Fuse Box:</b> "Count the wires top to bottom. State which have warning tags."</li>
     <li><b>Execution Switch:</b> "Escapee: read all six switch letters, left to right. Handler: find the switch with the case LETTER, then add SERIAL to the COLOR start number. Escapee: watch the number and flip as it appears."</li>
-    <li><b>Dial Safe:</b> "Escapee: name the three clues on the wall. Handler: check clue order by color, then tables and the odd-last twist."</li>
     <li>Still stuck after 45s on one lock: use staff answer key to give <b>one subtle hint</b>.</li>
   </ol>
 </section>
@@ -72,8 +74,8 @@ code { font-family: "Courier New", monospace; font-weight: bold; }
 <section>
   <h2>THEMES &amp; GENTLE MODE</h2>
   <ul>
-    <li><b>Themes:</b> One-tap <code>LIGHTS OUT / LIGHTS ON</code> toggle on start screen and HUD. Lights On is a dim, sickly yellow lit room. Toggling does not disturb the clock. URL: <code>?theme=light</code> or <code>?theme=dark</code>.</li>
-    <li><b>Gentle Mode:</b> Checkbox on start screen or URL <code>?gentle=1</code>. Completely disables strobes, full-screen blackouts, and softens stingers for light-sensitive guests.</li>
+    <li><b>Themes:</b> One-tap <code>LIGHTS OUT / LIGHTS ON</code> toggle on the main menu and HUD. Lights On is a dim, sickly yellow lit room. Toggling does not disturb the clock. URL: <code>?theme=light</code> or <code>?theme=dark</code>.</li>
+    <li><b>Gentle Mode:</b> Checkbox on the main menu or URL <code>?gentle=1</code>. Completely disables strobes, full-screen blackouts, and softens stingers for light-sensitive guests.</li>
   </ul>
 </section>
 
@@ -81,7 +83,7 @@ code { font-family: "Courier New", monospace; font-weight: bold; }
   <h2>ANSWER KEY &amp; DEBUGGING</h2>
   <ul>
     <li>Open <code>/admin/</code> on a staff phone. Enter the 4-part case code from the Escapee's screen.</li>
-    <li>Direct URL: <code>/admin/?case=K7-3-RED</code>. Shows exact solutions for all 5 doors.</li>
+    <li>Direct URL: <code>/admin/?case=K7-3-RED</code>. Shows exact solutions for all 4 doors.</li>
     <li>Test run with on-screen answers: <code>/?case=K7-3-RED&amp;debug</code> (staff use only).</li>
   </ul>
 </section>
@@ -89,11 +91,12 @@ code { font-family: "Courier New", monospace; font-weight: bold; }
 <section>
   <h2>GUEST SAFETY &amp; DISTRESS</h2>
   <ul>
-    <li>Start screen displays prominent photosensitivity and jump scare warnings.</li>
+    <li>The main menu displays prominent photosensitivity and jump scare warnings.</li>
     <li><b>If a guest is scared or asks to stop:</b> Stop immediately. Take the device, offer water, guide them out of the booth. Never pressure anyone to finish.</li>
   </ul>
 </section>
 
 </div>
+<p class="credit">Thank you for playing &middot; LOCKDOWN &middot; Blackthorn Manor is a game by D'SAITECH &middot; &copy; D'SAITECH</p>
 </body>
 </html>

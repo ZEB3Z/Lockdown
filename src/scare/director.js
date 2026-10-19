@@ -1,4 +1,4 @@
-// Scare Director: orchestrates scares across the 5 doors.
+// Scare Director: orchestrates scares across the 4 doors.
 // Balances intensity, cooldowns, gameplay readability, and safety rails.
 import { mulberry32, xmur3 } from '../core/rng.js';
 
@@ -34,7 +34,7 @@ export function resetScareDirector() {
     door3_hard: false,
     door4_fakeout: false,
     door4_real: false,
-    door5_relentless: false,
+    door4_lurker: false,
     last20_final: false,
   };
   lastDoorSeen = -1;
@@ -50,7 +50,7 @@ export function setGentleMode(g) {
 export function updateScareDirector(nowMs, run) {
   if (!run || run.over || run.paused) return;
 
-  const door = run.door; // 0..4
+  const door = run.door; // 0..3
   const proximity = run.proximity(); // 0..100
   const rem = run.remaining(); // seconds
   const doorTimeMs = run.activeMs - (run.marks[door - 1] ? run.marks[door - 1] * 1000 : 0);
@@ -108,9 +108,9 @@ export function updateScareDirector(nowMs, run) {
     return;
   }
 
-  // Guaranteed Beat 4: Door 5 -> relentless presence (whispers + lurker)
-  if (door === 4 && doorTimeMs >= 4500 && !scheduledBeats.door5_relentless) {
-    scheduledBeats.door5_relentless = true;
+  // Guaranteed Beat 4: Door 4 (final door) -> after the fake-out, a lurker settles in the corner
+  if (door === 3 && doorTimeMs >= 9500 && !scheduledBeats.door4_lurker) {
+    scheduledBeats.door4_lurker = true;
     V?.triggerMinorEffect?.('corner_lurker');
     A?.playEffect?.('whisper');
     return;
@@ -128,7 +128,7 @@ export function updateScareDirector(nowMs, run) {
   // Ambient procedural scare chances (governed by intensity and cooldowns)
   // Major scare budget: >= 12s on average, never stacked within 4s
   if (canFireMajorScare(nowMs) && (nowMs - lastMajorScareMs >= 12000)) {
-    const intensity = (proximity / 100) * 0.5 + (door / 4) * 0.3 + (run.strikes / 3) * 0.2;
+    const intensity = (proximity / 100) * 0.5 + (door / 3) * 0.3 + (run.strikes / 3) * 0.2;
     if (rand() < intensity * 0.02) {
       const candidates = ['face_glass', 'lights_dip', 'text_glitch', 'shadow'];
       const chosen = candidates[Math.floor(rand() * candidates.length)];

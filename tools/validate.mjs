@@ -1,4 +1,4 @@
-// npm run validate -> exhaustively checks EVERY possible case code (3,888) across all 5 modules.
+// npm run validate -> exhaustively checks EVERY possible case code (3,888) across all 4 modules.
 // Exit code 1 on any failure, so it gates the build.
 import { allCodes, CODE_COUNT } from '../src/core/code.js';
 import { buildPlan } from '../src/core/plan.js';
@@ -6,7 +6,7 @@ import { MODULES } from '../src/modules/index.js';
 import { COLUMNS, GLYPHS } from '../src/modules/glyphs/columns.js';
 import { CONFIG } from '../src/config.js';
 import { REF } from './reference.mjs';
-import { buildManual } from '../src/manual/build.js';
+import { buildManual, MANUAL_PAGES } from '../src/manual/build.js';
 import { GLYPH_ART } from '../src/ui/glyphs.js';
 import { SYMBOLS } from '../src/modules/tumbler/logic.js';
 import { LETTERS } from '../src/core/code.js';
@@ -14,7 +14,7 @@ import { CYCLE_MS, START, msForValue, valueAt, inWindow, EARLY_MS, LATE_MS } fro
 
 const errors = [];
 const fail = (m) => { if (errors.length < 30) errors.push(m); errors.push(null); };
-const EXPECT_LEN = { tumbler: 5, glyphs: 4, fuse: 1, switch: 1, dial: 3 };
+const EXPECT_LEN = { tumbler: 5, glyphs: 4, fuse: 1, switch: 1 };
 
 // ---- static data checks
 if (COLUMNS.length !== 6) fail('need 6 glyph columns');
@@ -43,7 +43,6 @@ for (let v = 3; v <= 19; v++) {
 // ---- exhaustive run over every code
 const tally = {};
 const distinct = {};
-const clueCounts = {};
 let n = 0;
 
 for (const code of allCodes()) {
@@ -90,13 +89,6 @@ for (const code of allCodes()) {
       if (act((sw + 1) % 6, mid) !== true) fail(`${code}/${id}: wrong switch accepted`);
       if (valueAt(mid) !== target) fail(`${code}/${id}: valueAt/msForValue mismatch`);
       if (!state.letters.includes(plan.ctx.letter)) fail(`${code}/${id}: case letter not on panel`);
-    } else if (id === 'dial') {
-      if (!steps.every((s) => Number.isInteger(s) && s >= 0 && s < 40)) fail(`${code}/${id}: dial step out of 0..39 range`);
-      if (steps.includes(state.startDial)) fail(`${code}/${id}: startDial equals a solution step`);
-      if (state.clues.length !== 3) fail(`${code}/${id}: clues count != 3`);
-      const clueTypes = state.clues.map((c) => c.type);
-      if (new Set(clueTypes).size !== 3) fail(`${code}/${id}: duplicate clue types in safe`);
-      clueTypes.forEach((ct) => { clueCounts[ct] = (clueCounts[ct] || 0) + 1; });
     }
 
     // Agreement with independent reference interpreter
@@ -115,12 +107,6 @@ for (const code of allCodes()) {
 
 if (n !== CODE_COUNT) fail(`checked ${n} codes, expected ${CODE_COUNT}`);
 
-// Statistical checks:
-for (const ct of ['clock', 'painting', 'candles', 'calendar', 'portrait', 'handprints']) {
-  const count = clueCounts[ct] || 0;
-  if (count < 1000) fail(`dial clue ${ct} frequency too low: ${count}`);
-}
-
 // Dead-rule check across all modules
 for (const [id, mod] of Object.entries(MODULES)) {
   for (const b of mod.BRANCHES) {
@@ -128,12 +114,15 @@ for (const [id, mod] of Object.entries(MODULES)) {
   }
 }
 
-// Manual verification: contains every rule line verbatim, every plate, 13 pages
+// Manual verification: contains every rule line verbatim, every plate, the right page count, credits, logo
 for (const color of [false, true]) {
   const html = buildManual({ color });
   const text = html.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
   const pages = (html.match(/<section class="page/g) || []).length;
-  if (pages !== 13) fail(`manual: expected 13 pages, got ${pages}`);
+  if (pages !== MANUAL_PAGES) fail(`manual: expected ${MANUAL_PAGES} pages, got ${pages}`);
+  if (!text.includes("D'SAITECH")) fail('manual: missing D\'SAITECH credit');
+  if (!html.includes('data-logo')) fail('manual: missing logo');
+  if (/DIAL SAFE/.test(text)) fail('manual: still mentions the removed DIAL SAFE');
   for (const [id, mod] of Object.entries(MODULES)) {
     if (!text.includes(mod.plate)) fail(`manual: missing plate ${mod.plate}`);
     for (const l of mod.RULES) {
@@ -153,7 +142,7 @@ for (const [id, mod] of Object.entries(MODULES)) {
   console.log(`\n${mod.plate} (${id}): ${distinct[id].size} distinct layouts`);
   console.log('  ' + mod.BRANCHES.map((b) => `${b}=${tally[id]?.[b] ?? 0}`).join('  '));
 }
-console.log(`\nStatistical checks: Switch letter always on panel | Dial clue distributions healthy`);
+console.log(`\nStatistical checks: Switch letter always on panel`);
 
 const real = errors.filter(Boolean);
 if (real.length) {

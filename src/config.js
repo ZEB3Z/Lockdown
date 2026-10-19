@@ -5,7 +5,7 @@ const BASE = {
   strikePenaltySec: 15,   // each strike removes this from the clock (killer jumps closer)
   killerSpeed: 1.0,       // clock drain multiplier (1.2 = 20% faster killer)
   difficulty: 'normal',   // 'easy' | 'normal' | 'hard'. Presets below override the numbers above. URL: ?difficulty=easy
-  doors: ['tumbler', 'glyphs', 'fuse', 'switch', 'dial'], // v2 run; all five doors, order shuffled per case code
+  doors: ['tumbler', 'glyphs', 'fuse', 'switch'], // four doors, order shuffled per case code
 };
 export const PRESETS = {
   easy: { timeLimitSec: 300, strikePenaltySec: 10, killerSpeed: 0.9 },

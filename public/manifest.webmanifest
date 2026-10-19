@@ -1,1 +1,1 @@
-{"name":"LOCKDOWN","short_name":"LOCKDOWN","start_url":"/","display":"standalone","orientation":"portrait","background_color":"#050505","theme_color":"#050505","icons":[{"src":"/icon.svg","sizes":"any","type":"image/svg+xml"}]}
+{"name":"LOCKDOWN","short_name":"LOCKDOWN","description":"LOCKDOWN: Blackthorn Manor. A game by D'SAITECH.","start_url":"/","display":"standalone","orientation":"portrait","background_color":"#050505","theme_color":"#050505","icons":[{"src":"/icon.svg","sizes":"any","type":"image/svg+xml"}]}

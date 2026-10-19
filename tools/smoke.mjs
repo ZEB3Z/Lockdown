@@ -1,5 +1,5 @@
 // npm run smoke -> drives the REAL shell/views/run/audio/visuals code in jsdom.
-// Part 1: sampled codes across all 5 modules (simulate clicks through the DOM, expect ok.. door/win).
+// Part 1: sampled codes across all 4 modules (simulate clicks through the DOM, expect ok.. door/win).
 // Part 2: full game flows through the shell: win, strikes->caught, retry, timeout, pause/resume, vibration, themes, flash limiter.
 import { JSDOM, VirtualConsole } from 'jsdom';
 
@@ -77,7 +77,7 @@ const bad = (m) => { fails++; console.error('FAIL', m); };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const $ = (s) => document.querySelector(s);
 
-// ---------- Part 1: sampled codes across all 5 modules through the DOM
+// ---------- Part 1: sampled codes across all 4 modules through the DOM
 // Select a rich representative sample (every letter, serial, last, color, ~150 codes)
 const all = [...allCodes()];
 const sampled = all.filter((_, idx) => idx % 26 === 0); // 150 codes evenly spanning the 3,888 space
@@ -95,11 +95,6 @@ for (const code of sampled) {
     if (d.id === 'switch') {
       el.setCountdown(steps[0] % 100);
       el.querySelector(`button[data-sw="${Math.floor(steps[0] / 100)}"]`).click();
-    } else if (d.id === 'dial') {
-      for (const val of steps) {
-        el.setDial(val);
-        el.querySelector('.btn-dial-set').click();
-      }
     } else {
       for (const s of steps) {
         const b = el.querySelector(`button[data-i="${s}"]`);
@@ -113,7 +108,7 @@ for (const code of sampled) {
   }
   n++;
 }
-console.log(`part 1: ${n} sampled codes, all 5 views clicked through the DOM`);
+console.log(`part 1: ${n} sampled codes, all 4 views clicked through the DOM`);
 
 // ---------- Part 1b: Execution Switch timing (right switch wrong time, wrong switch right time, edges)
 {
@@ -158,11 +153,6 @@ const clickDoor = (idx) => {
   if (d.id === 'switch') {
     el.setCountdown?.(steps[0] % 100);
     el.querySelector(`button[data-sw="${Math.floor(steps[0] / 100)}"]`)?.click();
-  } else if (d.id === 'dial') {
-    for (const val of steps) {
-      el.setDial?.(val);
-      el.querySelector('.btn-dial-set')?.click();
-    }
   } else {
     for (const s of steps) {
       $(`button[data-i="${s}"]`)?.click();
@@ -170,7 +160,17 @@ const clickDoor = (idx) => {
   }
 };
 
-// Check start screen UI
+// Check main menu UI
+if (!$('.menu') || !$('#go') || !/ENTER THE HOUSE/.test($('#go').textContent)) bad('main menu lacks ENTER THE HOUSE');
+if (!$('#manual') || $('#manual').getAttribute('href') !== '/manual/' || !/MANUAL/.test($('#manual').textContent)) bad('main menu lacks a link to the manual');
+if (!$('#credits')) bad('main menu lacks a credits button');
+if (!/D'SAITECH/.test(text()) || !$('img[data-logo]')) bad('main menu lacks the D\'SAITECH credit/logo');
+// Credits screen and back to the main menu
+$('#credits').click();
+if (!/THANK YOU FOR PLAYING/.test(text()) || !/D'SAITECH/.test(text()) || !$('img[data-logo]')) bad('credits screen lacks thank-you / D\'SAITECH / logo');
+if (!$('#back')) bad('credits screen lacks back button');
+$('#back').click();
+if (!$('.menu') || !$('#go')) bad('credits back button did not return to the main menu');
 if (!/WARNING/.test(text()) || !/jump scares/.test(text())) bad('start screen lacks warning');
 if (!$('#gentle') || !$('#snd')) bad('start screen lacks gentle mode / sound-off toggles');
 if (!$('#start-theme')) bad('start screen lacks theme toggle button');
@@ -188,7 +188,7 @@ await frame();
 if (!$('.hud') || !/K/.test($('.case').textContent) || !/RED/.test($('.case').textContent)) bad('play screen / case code missing');
 if ($('.plate').textContent !== MODULES[planNow.doors[0].id].plate) bad('door 1 plate mismatch');
 if ($('.clock').textContent !== '4:00') bad('clock should start 4:00, got ' + $('.clock').textContent);
-if ($('.door').textContent !== 'DOOR 1/5') bad('door counter should be DOOR 1/5, got ' + $('.door').textContent);
+if ($('.door').textContent !== 'DOOR 1/4') bad('door counter should be DOOR 1/4, got ' + $('.door').textContent);
 if (!audioCalls.connect || !audioCalls.start) bad('audio engine did not start');
 
 // Strike test on Door 0: wrong tap costs 15s penalty
@@ -197,10 +197,6 @@ const good0 = MODULES[door0.id].solve(door0.state, planNow.ctx);
 if (door0.id === 'switch') {
   $('.lock').setCountdown?.(good0[0] % 100);
   $(`button[data-sw="${(Math.floor(good0[0] / 100) + 1) % 6}"]`).click(); // right moment, wrong switch
-} else if (door0.id === 'dial') {
-  const badDial = (good0[0] + 5) % 40;
-  $('.lock').setDial?.(badDial);
-  $('.btn-dial-set').click();
 } else {
   const wrong = [...document.querySelectorAll('button[data-i]')].find((b) => +b.dataset.i !== good0[0]);
   wrong?.click();
@@ -234,14 +230,15 @@ if ($('.clock').textContent !== '3:44') bad('HUD theme toggle altered the clock'
 $('#hud-theme').click();
 if (document.documentElement.getAttribute('data-theme') !== 'dark') bad('HUD theme button did not switch back to dark');
 
-// Solve all 5 doors to win
+// Solve all 4 doors to win
 clickDoor(0); await sleep(800);
 clickDoor(1); await sleep(800);
 clickDoor(2); await sleep(800);
-clickDoor(3); await sleep(800);
-clickDoor(4); await frame();
+clickDoor(3); await frame();
 
-if (!/ESCAPED/.test(text()) || !$('.big-time')) bad('no win screen after clearing 5 doors');
+if (!/ESCAPED/.test(text()) || !$('.big-time')) bad('no win screen after clearing 4 doors');
+if (!$('#menu') || !/MAIN MENU/.test($('#menu').textContent)) bad('win screen lacks a MAIN MENU button');
+if (!/Thank you for playing/.test(text()) || !/D'SAITECH/.test(text())) bad('win screen lacks thank-you / D\'SAITECH credit');
 const winTime = $('.big-time').textContent;
 if (winTime !== '3:44') bad('win time unexpected: ' + winTime);
 if (!/strikes 1/.test($('.dbg')?.textContent || '')) bad('?stats line missing on end screen');
@@ -256,9 +253,6 @@ for (let i = 0; i < 3; i++) {
   if (planNow.doors[0].id === 'switch') {
     $('.lock').setCountdown?.(g % 100);
     $(`button[data-sw="${(Math.floor(g / 100) + 1) % 6}"]:not(.flipped)`)?.click();
-  } else if (planNow.doors[0].id === 'dial') {
-    $('.lock').setDial?.((g + 7) % 40);
-    $('.btn-dial-set')?.click();
   } else {
     [...document.querySelectorAll('button[data-i]')].find((b) => +b.dataset.i !== g && !b.classList.contains('bad'))?.click();
   }
@@ -266,6 +260,8 @@ for (let i = 0; i < 3; i++) {
   await frame(20);
 }
 if (!/HE FOUND YOU/.test(text()) || !/Too much noise/.test(text())) bad('no caught screen after 3 strikes');
+if (!$('#menu') || !/MAIN MENU/.test($('#menu').textContent)) bad('caught screen lacks a MAIN MENU button');
+if (!/Thank you for playing/.test(text()) || !/D'SAITECH/.test(text())) bad('caught screen lacks thank-you / D\'SAITECH credit');
 
 // Retry -> timeout
 $('#again').click();
@@ -289,6 +285,38 @@ T += 100;
 await frame();
 if ($('.pause')) bad('rotate overlay stuck after returning upright');
 if ($('.clock').textContent !== clkA) bad(`landscape drained clock: ${clkA} -> ${$('.clock').textContent}`);
+
+// Exit mid-run: MENU asks first, STAY resumes (clock held), MAIN MENU leaves and the next run works
+{
+  const clkB = $('.clock').textContent;
+  $('#hud-exit').click();
+  if (!$('.pause.confirm') || !$('#stay') || !$('#leave')) bad('exit button did not ask for confirmation');
+  T += 30000;
+  await frame();
+  $('#stay').click();
+  if ($('.pause')) bad('STAY did not dismiss the confirmation');
+  T += 100;
+  await frame();
+  if ($('.clock').textContent !== clkB) bad(`confirmation drained the clock: ${clkB} -> ${$('.clock').textContent}`);
+  $('#hud-exit').click();
+  $('#leave').click();
+  if (!$('.menu') || !$('#go') || !$('#manual')) bad('leaving mid-run did not return to the main menu');
+  T += 5000;
+  await frame(30);
+  if ($('.hud')) bad('run kept going after leaving to the menu');
+  // end screens return to the menu too: finish a run by timeout, then MAIN MENU
+  $('#go').click();
+  await frame();
+  if ($('.clock').textContent !== '4:00') bad('a run started from the menu should begin at 4:00, got ' + $('.clock').textContent);
+  T += 241000;
+  await frame(80);
+  if (!/HE FOUND YOU/.test(text())) bad('timeout after menu restart did not end the run');
+  $('#menu').click();
+  if (!$('.menu') || !$('#go')) bad('MAIN MENU button on the end screen did not return to the main menu');
+  $('#go').click();
+  await frame();
+  if (!$('.hud') || $('.clock').textContent !== '4:00') bad('could not start a fresh run after returning to the menu');
+}
 
 // Flash limiter unit tests
 resetFlashLimiter();

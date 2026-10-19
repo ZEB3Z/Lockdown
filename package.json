@@ -1,7 +1,9 @@
 {
   "name": "lockdown",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
+  "description": "LOCKDOWN: Blackthorn Manor. A two-player slasher escape game by D'SAITECH.",
+  "author": "D'SAITECH",
   "type": "module",
   "scripts": {
     "validate": "node tools/validate.mjs",
@@ -10,7 +12,8 @@
     "dev": "vite",
     "build": "node tools/validate.mjs && vite build",
     "preview": "vite preview",
-    "qr": "node tools/qr.mjs"
+    "qr": "node tools/qr.mjs",
+    "manual-pdf": "node tools/manual-pdf.mjs"
   },
   "devDependencies": {
     "jsdom": "^26.1.0",

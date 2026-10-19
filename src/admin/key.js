@@ -25,11 +25,6 @@ function describe(id, st, t) {
       <div class="dim">Switch = case LETTER · Start (COLOR): <b>${t.base}</b> + SERIAL <b>${t.add}</b></div>
       <div class="ans">FLIP SWITCH ${t.sw + 1} (letter ${st.letters[t.sw]}) WHEN COUNTDOWN SHOWS ${t.target}</div>`;
   }
-  if (id === 'dial') {
-    return `<div>Clues on wall (L/C/R): ${st.clues.map((c) => `<span class="k">${c.type.toUpperCase()} [${c.val}]</span>`).join(' · ')}</div>
-      <div class="dim">Clue Order: ${t.orderedClues.map((c, i) => `Turn ${i + 1}=${c.type.toUpperCase()} [${c.val}] (base ${t.baseNumbers[i]})`).join(' · ')}</div>
-      <div class="ans">DIAL TURNS: ↶ LEFT to <b>${t.steps[0]}</b> → ↷ RIGHT to <b>${t.steps[1]}</b> → ↶ LEFT to <b>${t.steps[2]}</b></div>`;
-  }
   return '';
 }
 

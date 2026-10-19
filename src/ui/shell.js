@@ -9,6 +9,16 @@ import * as V from './visuals.js';
 import * as H from './haptics.js';
 import * as director from '../scare/director.js';
 
+// Studio credit used across the game, manual, docs and answer key.
+export const STUDIO = "D'SAITECH";
+
+// The logo file lives at src/assets/logo.png (placeholder until replaced). main.js resolves its
+// built URL and hands it over here, so this module stays importable from Node (validator, smoke test).
+let LOGO = '';
+export const setLogo = (url) => { LOGO = url || ''; };
+const logoImg = (cls = '') => `<img class="logo ${cls}" data-logo src="${LOGO}" alt="${STUDIO} logo" draggable="false">`;
+const brandFooter = () => `<footer class="brand">${logoImg('sm')}<span>A game by <b>${STUDIO}</b></span></footer>`;
+
 const qs = typeof location !== 'undefined' ? new URLSearchParams(location.search) : new URLSearchParams();
 const FIXED = parseCode(qs.get('case') || '')?.code || null;
 const DEBUG = qs.has('debug');
@@ -67,21 +77,34 @@ const mmss = (s) => {
 export function startShell(app) {
   applyTheme(currentTheme);
   V.init();
-  start(app);
+  showMenu(app);
 }
 
-function start(app) {
+// Leaves whatever screen is up and returns to the main menu with a clean slate.
+function resetAtmosphere() {
+  V.reset();
+  V.setLevel(0);
+}
+
+function showMenu(app) {
   applyTheme(currentTheme);
+  app.className = '';
   app.innerHTML = `
-    <section class="screen start">
+    <section class="screen start menu">
       <h1>LOCK<br>DOWN</h1>
+      <p class="tagline">BLACKTHORN MANOR</p>
       <p class="warn"><b>WARNING</b> This game contains jump scares, sudden loud sounds, and flickering light.</p>
       <label class="opt"><input type="checkbox" id="gentle" ${fx.reduced ? 'checked' : ''}> GENTLE MODE (no strobes, no full blackouts, softer audio)</label>
-      <label class="opt"><input type="checkbox" id="snd"> Sound off (staff testing)</label>
+      <label class="opt"><input type="checkbox" id="snd" ${muted ? 'checked' : ''}> Sound off (staff testing)</label>
       <div class="theme-row">
         <button type="button" class="theme-btn" id="start-theme">${currentTheme === 'light' ? 'LIGHTS ON' : 'LIGHTS OUT'}</button>
       </div>
-      <button class="big" id="go">ENTER THE HOUSE</button>
+      <div class="menu-btns">
+        <button class="big" id="go">ENTER THE HOUSE</button>
+        <a class="big alt" id="manual" href="/manual/">THE MANUAL</a>
+        <button type="button" class="link-btn" id="credits">CREDITS</button>
+      </div>
+      ${brandFooter()}
     </section>
   `;
 
@@ -91,6 +114,8 @@ function start(app) {
     applyTheme(next);
     themeBtn.textContent = next === 'light' ? 'LIGHTS ON' : 'LIGHTS OUT';
   };
+
+  app.querySelector('#credits').onclick = () => showCredits(app);
 
   app.querySelector('#go').onclick = () => {
     fx.reduced = app.querySelector('#gentle').checked;
@@ -102,6 +127,26 @@ function start(app) {
     audio.unlock();
     play(app);
   };
+}
+
+function showCredits(app) {
+  app.innerHTML = `
+    <section class="screen start credits">
+      ${logoImg('lg')}
+      <h2 class="thanks-title">THANK YOU FOR PLAYING</h2>
+      <p class="tagline">LOCKDOWN · BLACKTHORN MANOR</p>
+      <dl class="credit-list">
+        <div><dt>A game by</dt><dd>${STUDIO}</dd></div>
+        <div><dt>Game design, code, sound and scares</dt><dd>${STUDIO}</dd></div>
+        <div><dt>Puzzle rules and Handler's manual</dt><dd>${STUDIO}</dd></div>
+        <div><dt>Built with</dt><dd>Vite · vanilla JavaScript · Web Audio</dd></div>
+      </dl>
+      <p class="warn">No servers. No accounts. Every sound you heard was synthesized live in your browser.</p>
+      <button class="big" id="back">BACK TO MAIN MENU</button>
+      <p class="copy">© ${STUDIO}. All rights reserved.</p>
+    </section>
+  `;
+  app.querySelector('#back').onclick = () => showMenu(app);
 }
 
 function play(app) {
@@ -127,6 +172,7 @@ function play(app) {
         <div class="hud-controls">
           <button type="button" class="theme-btn" id="hud-theme">${currentTheme === 'light' ? 'LIGHTS ON' : 'LIGHTS OUT'}</button>
           <button type="button" class="mute">${muted ? 'UNMUTE' : 'MUTE'}</button>
+          <button type="button" class="mute" id="hud-exit">MENU</button>
         </div>
       </div>
       <main class="lock"></main>
@@ -152,6 +198,7 @@ function play(app) {
   let raf;
   let timer;
   let ended = false;
+  let leaveO = null;
   let last = {};
 
   // Adaptive quality tracking
@@ -318,8 +365,7 @@ function play(app) {
     }
   }
 
-  function end(kind) {
-    if (ended) return;
+  function teardown() {
     ended = true;
     cancelAnimationFrame(raf);
     clearTimeout(timer);
@@ -328,10 +374,39 @@ function play(app) {
     try {
       wake?.release();
     } catch {}
-
-    const rem = run.remaining();
     audio.stopRun();
     H.stop();
+  }
+
+  // Quit mid-run (confirmed by the player). The clock is held while the question is on screen.
+  function askLeave() {
+    if (ended || leaveO) return;
+    hold(true);
+    leaveO = document.createElement('div');
+    leaveO.className = 'pause confirm';
+    leaveO.innerHTML = `<div><p>LEAVE THE HOUSE?</p><small>This run will be lost.</small>
+      <div class="confirm-btns"><button type="button" class="big" id="stay">STAY</button><button type="button" class="big alt" id="leave">MAIN MENU</button></div></div>`;
+    app.appendChild(leaveO);
+    leaveO.querySelector('#stay').onclick = () => {
+      leaveO.remove();
+      leaveO = null;
+      hold(false);
+    };
+    leaveO.querySelector('#leave').onclick = () => {
+      leaveO = null;
+      teardown();
+      audio.setPaused(false); // hold(true) paused the audio; do not carry that into the next run
+      resetAtmosphere();
+      showMenu(app);
+    };
+  }
+  q('#hud-exit').onclick = askLeave;
+
+  function end(kind) {
+    if (ended) return;
+    teardown();
+
+    const rem = run.remaining();
     V.setLevel(kind === 'win' ? 0 : 100);
 
     if (kind === 'win') {
@@ -344,8 +419,12 @@ function play(app) {
     buzz(kind === 'win' ? [60, 40, 60] : [500]);
 
     app.innerHTML = kind === 'win'
-      ? `<section class="screen end win"><h1>ESCAPED</h1><div class="big-time">${mmss(rem)}</div><p>TIME REMAINING</p><button class="big" id="again">PLAY AGAIN</button></section>`
-      : `<section class="screen end lose"><h1>HE FOUND YOU</h1><p>${run.strikes >= CONFIG.maxStrikes ? 'Too much noise.' : 'Time ran out.'}</p><button class="big" id="again">TRY AGAIN</button></section>`;
+      ? `<section class="screen end win"><h1>ESCAPED</h1><div class="big-time">${mmss(rem)}</div><p>TIME REMAINING</p>
+          <div class="end-btns"><button class="big" id="again">PLAY AGAIN</button><button class="big alt" id="menu">MAIN MENU</button></div>
+          <p class="thanks">Thank you for playing LOCKDOWN.</p>${brandFooter()}</section>`
+      : `<section class="screen end lose"><h1>HE FOUND YOU</h1><p>${run.strikes >= CONFIG.maxStrikes ? 'Too much noise.' : 'Time ran out.'}</p>
+          <div class="end-btns"><button class="big" id="again">TRY AGAIN</button><button class="big alt" id="menu">MAIN MENU</button></div>
+          <p class="thanks">Thank you for playing LOCKDOWN.</p>${brandFooter()}</section>`;
 
     if (STATS) {
       const per = run.marks.map((m, i) => `${plan.doors[i].id} ${m - (run.marks[i - 1] || 0)}s`).join(' | ');
@@ -357,6 +436,10 @@ function play(app) {
     }
 
     app.querySelector('#again').onclick = () => play(app);
+    app.querySelector('#menu').onclick = () => {
+      resetAtmosphere();
+      showMenu(app);
+    };
   }
 
   document.addEventListener('visibilitychange', onVis);
