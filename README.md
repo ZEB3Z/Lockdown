@@ -417,7 +417,7 @@ Defined in `src/config.js`.
 
 | Role | Name |
 |---|---|
-| **Studio** | D'SAITECH |
+| **Organization** | D'SAITECH |
 | **Main Developer** | **D'SAITECH Secretary - Ericksson Brutas** |
 | **Scope** | Game design, code, sound, puzzle rules, and the Handler's manual |
 
