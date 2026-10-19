@@ -178,7 +178,13 @@ function setupCanvas(canvas, toast, level) {
   const ctx = canvas.getContext('2d');
   canvas.style.cursor = 'default';
   const tip = activeContainer?.querySelector('.maze-hud-tip');
-  if (tip) tip.textContent = 'Hover START to begin!';
+  const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+  if (tip) tip.textContent = isTouchDevice ? 'Drag square into START to begin!' : 'Hover START to begin!';
+
+  const TOUCH_OFFSET_Y = 44;
+  let isTouchInput = false;
+  let isTouchActive = false;
+  let touchAnchor = { x: 0, y: 0 };
 
   let playerPos = {
     x: level.start.x + level.start.w / 2,
@@ -226,6 +232,24 @@ function setupCanvas(canvas, toast, level) {
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText('START', level.start.x + level.start.w / 2, level.start.y + level.start.h / 2);
+
+      // Mobile touch hint below start button
+      if (isTouchDevice || isTouchInput) {
+        const touchY = level.start.y + TOUCH_OFFSET_Y;
+        if (touchY + level.start.h <= canvas.height) {
+          ctx.save();
+          ctx.strokeStyle = 'rgba(0, 229, 255, 0.4)';
+          ctx.setLineDash([3, 3]);
+          ctx.lineWidth = 1.5;
+          ctx.strokeRect(level.start.x, touchY, level.start.w, level.start.h);
+          ctx.fillStyle = 'rgba(0, 229, 255, 0.12)';
+          ctx.fillRect(level.start.x, touchY, level.start.w, level.start.h);
+          ctx.fillStyle = 'rgba(0, 229, 255, 0.7)';
+          ctx.font = '9px Arial, sans-serif';
+          ctx.fillText('TOUCH', level.start.x + level.start.w / 2, touchY + level.start.h / 2);
+          ctx.restore();
+        }
+      }
     } else {
       ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
       ctx.lineWidth = 1;
@@ -243,7 +267,28 @@ function setupCanvas(canvas, toast, level) {
     ctx.textBaseline = 'middle';
     ctx.fillText(level.title, level.labelPos.x, level.labelPos.y);
 
-    // 7. Player: Small solid dark blue square with crisp white outline
+    // 7. Touch Anchor & Tether guide line (when touch input is active)
+    if (isTouchInput && isTouchActive) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(touchAnchor.x, touchAnchor.y, 16, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0, 229, 255, 0.2)';
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(0, 229, 255, 0.6)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.setLineDash([3, 3]);
+      ctx.moveTo(touchAnchor.x, touchAnchor.y);
+      ctx.lineTo(playerPos.x, playerPos.y);
+      ctx.strokeStyle = 'rgba(0, 229, 255, 0.4)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // 8. Player: Small solid dark blue square with crisp white outline
     ctx.fillStyle = '#001a99';
     ctx.fillRect(
       playerPos.x - HALF_SIZE,
@@ -267,10 +312,15 @@ function setupCanvas(canvas, toast, level) {
     const scaleY = canvas.height / rect.height;
     const clientX = e.clientX ?? e.touches?.[0]?.clientX ?? 0;
     const clientY = e.clientY ?? e.touches?.[0]?.clientY ?? 0;
-    return {
-      x: (clientX - rect.left) * scaleX,
-      y: (clientY - rect.top) * scaleY,
-    };
+    const rawX = (clientX - rect.left) * scaleX;
+    const rawY = (clientY - rect.top) * scaleY;
+    const isTouch = e.pointerType === 'touch';
+    if (isTouch) {
+      isTouchInput = true;
+      touchAnchor = { x: rawX, y: rawY };
+    }
+    const y = isTouch ? rawY - TOUCH_OFFSET_Y : rawY;
+    return { x: rawX, y, rawX, rawY, isTouch };
   }
 
   function isPointInside(x, y) {
@@ -330,7 +380,7 @@ function setupCanvas(canvas, toast, level) {
   function resetToStart() {
     hasStartedLevel = false;
     canvas.style.cursor = 'default';
-    if (tip) tip.textContent = 'Hover START to begin!';
+    if (tip) tip.textContent = isTouchDevice ? 'Drag square into START to begin!' : 'Hover START to begin!';
     playerPos = {
       x: level.start.x + level.start.w / 2,
       y: level.start.y + level.start.h / 2,
@@ -445,6 +495,44 @@ function setupCanvas(canvas, toast, level) {
     resetToStart();
   }
 
+  function onPointerDown(e) {
+    if (e.pointerType === 'touch') {
+      isTouchInput = true;
+      isTouchActive = true;
+    }
+    try {
+      canvas.setPointerCapture?.(e.pointerId);
+    } catch (_) {}
+    onPointerMove(e);
+  }
+
+  function onPointerUp(e) {
+    try {
+      canvas.releasePointerCapture?.(e.pointerId);
+    } catch (_) {}
+    if (e.pointerType === 'touch') {
+      isTouchActive = false;
+      draw();
+      // Lifting finger during active gameplay resets level (or scares in scary zone)
+      if (hasStartedLevel) {
+        onPointerLeave();
+      }
+    }
+  }
+
+  function onPointerCancel(e) {
+    try {
+      canvas.releasePointerCapture?.(e.pointerId);
+    } catch (_) {}
+    if (e.pointerType === 'touch') {
+      isTouchActive = false;
+      draw();
+      if (hasStartedLevel) {
+        onPointerLeave();
+      }
+    }
+  }
+
   function onCanvasClick(e) {
     if (!isPlaying || scareTriggered || !hasStartedLevel) return;
     const { x, y } = getCanvasCoords(e);
@@ -464,8 +552,10 @@ function setupCanvas(canvas, toast, level) {
     }
   }
 
+  canvas.addEventListener('pointerdown', onPointerDown);
   canvas.addEventListener('pointermove', onPointerMove);
-  canvas.addEventListener('pointerdown', onPointerMove);
+  canvas.addEventListener('pointerup', onPointerUp);
+  canvas.addEventListener('pointercancel', onPointerCancel);
   canvas.addEventListener('pointerleave', onPointerLeave);
   canvas.addEventListener('click', onCanvasClick);
 
