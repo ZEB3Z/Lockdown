@@ -52,7 +52,7 @@ export function applyTheme(theme) {
 }
 
 const fx = {
-  reduced: (typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches) || qs.get('gentle') === '1',
+  reduced: qs.get('gentle') === '1',
 };
 
 let wake = null;
