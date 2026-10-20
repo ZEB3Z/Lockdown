@@ -102,7 +102,7 @@ function showMenu(app) {
       </div>
       <div class="menu-btns">
         <button class="big" id="go">ENTER THE HOUSE</button>
-        <a class="big alt" id="manual" href="/manual/">THE MANUAL</a>
+        <a class="big alt" id="escapee" href="/escapee/">ESCAPEE'S INSTRUCTIONS</a>
         <button type="button" class="link-btn" id="credits">CREDITS</button>
       </div>
       ${brandFooter()}

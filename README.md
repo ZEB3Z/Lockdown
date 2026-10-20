@@ -72,7 +72,7 @@ flowchart LR
     G -. 3 strikes or 0:00 .-> X
 ```
 
-1. The Escapee scans the QR code. The **main menu** offers **ENTER THE HOUSE**, **THE MANUAL**, and **CREDITS**. Tapping **ENTER THE HOUSE** generates a **case code** such as `K7-3-RED` and starts the clock at **4:00** (240 seconds on normal difficulty).
+1. The Escapee scans the QR code. The **main menu** offers **ENTER THE HOUSE**, **ESCAPEE'S INSTRUCTIONS**, and **CREDITS**. Tapping **ENTER THE HOUSE** generates a **case code** such as `K7-3-RED` and starts the clock at **4:00** (240 seconds on normal difficulty).
 2. Four locked doors appear in an order shuffled per case code: **BRASS TUMBLER**, **GLYPH PAD**, **FUSE BOX**, and **EXECUTION SWITCH**.
 3. At each door the Escapee reads the **plate name** aloud. The Handler finds that page. The manual rules, combined with the case code and on-screen details, yield exactly one correct solution.
 4. A wrong action is a **strike**. Each strike costs **15 seconds** and moves the killer closer with an audio burst. **Three strikes, or zero seconds, ends the run.**
@@ -134,6 +134,7 @@ npm run dev
 | `http://localhost:5173/?stats` | End screen with per-door clearance times, theme, gentle mode, and quality status |
 | `http://localhost:5173/?theme=light` | Preview the "Lights On" theme |
 | `http://localhost:5173/?gentle=1` | Preview Gentle Mode |
+| `http://localhost:5173/escapee/` | Escapee's instructions page (the main menu links here), with a **MAIN MENU** link back |
 | `http://localhost:5173/manual/` | Rendered 5-page manual, with a **MAIN MENU** link back to the game |
 | `http://localhost:5173/admin/?case=K7-3-RED` | 4-module answer key |
 | `http://localhost:5173/facilitator/` | 1-page booth briefing sheet |

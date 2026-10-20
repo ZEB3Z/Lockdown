@@ -17,11 +17,11 @@ Commit `package-lock.json`. `node_modules/` and `dist/` are ignored.
 Supported browsers: iOS Safari 14.5+, Android Chrome 84+ (flex `gap`, module scripts).
 
 Verify on a real phone:
-- `/` shows the main menu (ENTER THE HOUSE, THE MANUAL, CREDITS), plays 4 doors (4:00 clock), theme toggle works, and every end screen has MAIN MENU.
+- `/` shows the main menu (ENTER THE HOUSE, ESCAPEE'S INSTRUCTIONS, CREDITS), plays 4 doors (4:00 clock), theme toggle works, and every end screen has MAIN MENU.
 - `/manual/` prints (5 pages, A4) and its MAIN MENU link returns to the game.
 - `/admin/?case=K7-3-RED` shows solutions for all 4 doors.
 - `/facilitator/` loads with the 4-door briefing.
-- Offline: load `/` once online, switch to airplane mode, reload: starts offline via PWA cache `lockdown-v3` (the main menu's THE MANUAL page is cached too).
+- Offline: load `/` once online, switch to airplane mode, reload: starts offline via PWA cache `lockdown-v3` (the main menu's escapee instructions page is cached too).
 
 ## 3. QR code
 ```

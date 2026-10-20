@@ -162,7 +162,8 @@ const clickDoor = (idx) => {
 
 // Check main menu UI
 if (!$('.menu') || !$('#go') || !/ENTER THE HOUSE/.test($('#go').textContent)) bad('main menu lacks ENTER THE HOUSE');
-if (!$('#manual') || $('#manual').getAttribute('href') !== '/manual/' || !/MANUAL/.test($('#manual').textContent)) bad('main menu lacks a link to the manual');
+if (!$('#escapee') || $('#escapee').getAttribute('href') !== '/escapee/' || !/ESCAPEE/.test($('#escapee').textContent)) bad('main menu lacks a link to the escapee instructions');
+if ($('#manual')) bad('main menu should not link to the Handler manual');
 if (!$('#credits')) bad('main menu lacks a credits button');
 if (!/D'SAITECH/.test(text()) || !$('img[data-logo]')) bad('main menu lacks the D\'SAITECH credit/logo');
 // Credits screen and back to the main menu
@@ -300,7 +301,7 @@ if ($('.clock').textContent !== clkA) bad(`landscape drained clock: ${clkA} -> $
   if ($('.clock').textContent !== clkB) bad(`confirmation drained the clock: ${clkB} -> ${$('.clock').textContent}`);
   $('#hud-exit').click();
   $('#leave').click();
-  if (!$('.menu') || !$('#go') || !$('#manual')) bad('leaving mid-run did not return to the main menu');
+  if (!$('.menu') || !$('#go') || !$('#escapee')) bad('leaving mid-run did not return to the main menu');
   T += 5000;
   await frame(30);
   if ($('.hud')) bad('run kept going after leaving to the menu');
