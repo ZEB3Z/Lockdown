@@ -1,5 +1,6 @@
 import './style.css';
 import './secret/maze.css';
+import './horror.css';
 import { startShell, setLogo } from './ui/shell.js';
 import { LOGO_URL } from './assets/logo-url.js';
 // iOS ignores user-scalable=no: block pinch gestures explicitly.

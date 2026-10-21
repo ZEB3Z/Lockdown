@@ -64,9 +64,7 @@ b { font-weight: bold; }
 /* ---- how to play ---- */
 .how { margin: 0; padding-left: 6mm; }
 .how li { margin: 1.6mm 0; }
-.boxes { display: flex; gap: 4mm; margin: 1mm 0 3mm; }
-.boxes div { flex: 1; border: 0.5mm solid var(--ink); text-align: center; font: bold 22pt var(--mono); padding: 2.5mm; }
-.boxes small { display: block; font-size: 8pt; font-weight: normal; letter-spacing: .12em; }
+.how + .note { margin-top: 3mm; }
 .split { display: grid; grid-template-columns: 1fr 1fr; gap: 8mm; }
 .idx { border-collapse: collapse; width: 100%; margin-bottom: 3mm; font-size: 10pt; }
 .idx th, .idx td { border: 0.4mm solid var(--ink); padding: 1.2mm 2.5mm; text-align: left; }
@@ -121,3 +119,35 @@ h2.plate { margin: 0; flex: none; border: 0.8mm solid var(--accent); padding: .5
   .page { margin: 0; box-shadow: none; break-after: page; page-break-after: always; -webkit-print-color-adjust: exact; print-color-adjust: exact; outline: none !important; }
   .page:last-child { break-after: auto; page-break-after: auto; }
 }
+
+/* ---- color edition only: warm paper tint and red accents. The B/W print stays clean and ink-light. ---- */
+.bar { background: #0b0505; border-bottom: 2px solid #8c0f15; }
+.color .page { background:
+  radial-gradient(ellipse at 8% 4%, rgba(120,70,20,.18), transparent 38%),
+  radial-gradient(ellipse at 94% 96%, rgba(90,20,10,.2), transparent 40%),
+  var(--paper); }
+.color .coverpage::before { border-color: #8c0f15; }
+.color .title { text-shadow: 0.6mm 0 rgba(0,0,0,.25), -0.5mm 0 rgba(140,15,21,.4), 0 0 3mm rgba(140,15,21,.35); }
+.color .stamp { background: rgba(140,15,21,.08); }
+.color .coverpage::after { border-color: #8c0f15; }
+.color .page:not(.coverpage)::before { border-color: #8c0f15; }
+.color .quote b { color: #8c0f15; text-shadow: 0 0 2mm rgba(140,15,21,.4); }
+
+/* ---- readability: ask box, numbered steps, reading guide ---- */
+.ask { display: flex; gap: 3mm; align-items: baseline; margin: 0 0 2.5mm; padding: 1.6mm 3mm; border: 0.5mm dashed var(--ink); background: var(--tint); font-size: 10pt; }
+.ask b { flex: none; font: bold 7.5pt var(--mono); letter-spacing: .1em; }
+.duo .ask { display: block; font-size: 9.5pt; }
+.duo .ask b { display: block; margin-bottom: .6mm; }
+.rules .intro { font-style: italic; margin: 0 0 1.6mm; }
+.rules .step { display: flex; gap: 2.2mm; align-items: baseline; margin: 1.4mm 0; padding: 1.2mm 0; border-top: 0.2mm solid #999; }
+.rules .step .n { flex: none; min-width: 6.2mm; padding: .2mm 0; text-align: center; font: bold 10pt var(--mono); border: 0.5mm solid var(--accent); }
+.color .rules .step .n { background: var(--accent); color: #fff; }
+.rules .ind { margin-left: 8.4mm; font-size: 10pt; }
+.duo .rules .step .n { min-width: 5.2mm; }
+.duo .rules .ind { margin-left: 7.4mm; }
+.guide { margin: 0; padding-left: 5mm; font-size: 10pt; }
+.guide li { margin: 1mm 0; }
+.rules .step .t { flex: 1; }
+.rules .step .n.wide { min-width: 17mm; padding: .2mm 1.2mm; white-space: nowrap; }
+.rules .plain { margin: 1.2mm 0; }
+.duo .rules .step .n.wide { min-width: 15mm; }

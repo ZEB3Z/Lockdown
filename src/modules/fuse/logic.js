@@ -7,9 +7,9 @@ export const BRANCHES = ['3:tagged', '3:plain', '4:odd', '4:even:color', '4:even
   '5:one-tag', '5:vowel', '5:consonant', '6:two-color', '6:else'];
 
 export const RULES = [
-  'Wires are numbered 1-N from the TOP. A wire is LABELED if it has a word tag on it.',
+  'Wires are numbered 1-N from the TOP. A wire is LABELED if it has a paper TAG with a word on it. A wire with no tag is PLAIN.',
   '3 wires: any labeled wire -> cut the TOPMOST labeled wire. None -> cut wire 2.',
-  '4 wires: LAST DIGIT odd -> cut wire 4. Even -> cut the TOPMOST wire of the case COLOR; if none, cut wire 1.',
+  '4 wires: ROOM odd -> cut wire 4. Even -> cut the TOPMOST wire of the case COLOR; if none, cut wire 1.',
   '5 wires: exactly ONE labeled wire -> cut it. Otherwise: LETTER is A or E -> cut wire 2; any other letter -> cut wire 5.',
   '6 wires: TWO or more wires of the case COLOR -> cut the SECOND one from the top. Otherwise cut wire 3.',
 ];
@@ -30,7 +30,7 @@ export function trace(state, ctx) {
   const out = (cut, b) => ({ steps: [cut], branches: [b] });
   if (n === 3) return tagged.length ? out(tagged[0], '3:tagged') : out(1, '3:plain');
   if (n === 4) {
-    if (ctx.lastOdd) return out(3, '4:odd');
+    if (ctx.roomOdd) return out(3, '4:odd');
     return ofColor.length ? out(ofColor[0], '4:even:color') : out(0, '4:even:none');
   }
   if (n === 5) {

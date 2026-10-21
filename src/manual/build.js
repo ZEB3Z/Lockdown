@@ -10,13 +10,35 @@ const STUDIO = "D'SAITECH";
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const bold = (s) => s.replace(/\b[A-Z][A-Z-]{2,}(?: [A-Z][A-Z-]{2,})*\b/g, '<b>$&</b>');
-const lines = (arr) => '<div class="rules">' + arr.map((l) => `<p class="${/^\s/.test(l) ? 'ind' : ''}">${bold(esc(l.trim()))}</p>`).join('') + '</div>';
-const fields = (c) => `LETTER ${c.letter} · SERIAL ${c.serial} · LAST ${c.last} · COLOR ${c.color}`;
+// One row per rule line. Numbered lines are STEPS (big number badge); indented lines are sub-cases; the rest is an intro.
+// The number stays inside the same text run as the sentence, so the validator still finds every line verbatim.
+const lines = (arr) => '<div class="rules">' + arr.map((l, idx) => {
+  const t = l.trim();
+  const step = /^(\d+\.)\s(.*)$/.exec(t), wires = /^(\d wires:)\s(.*)$/.exec(t);
+  if (step) return `<p class="step"><span class="n">${step[1]}</span> <span class="t">${bold(esc(step[2]))}</span></p>`;
+  if (wires) return `<p class="step"><span class="n wide">${wires[1]}</span> <span class="t">${bold(esc(wires[2]))}</span></p>`;
+  if (/^\s/.test(l)) return `<p class="ind">${bold(esc(t))}</p>`;
+  return `<p class="${idx === 0 ? 'intro' : 'plain'}">${bold(esc(t))}</p>`;
+}).join('') + '</div>';
+const ask = (txt) => `<div class="ask"><b>ASK YOUR PARTNER</b><span>${esc(txt)}</span></div>`;
+const fields = (c) => `LETTER ${c.letter} · SERIAL ${c.serial} · ROOM ${c.room} · COLOR ${c.color}`;
 
 const EX = 'K7-3-RED';
 const ex = buildPlan(EX);
 const exDoor = (id) => ex.doors.find((d) => d.id === id);
 const exBox = (inner) => `<div class="example"><h3>WORKED EXAMPLE <small>· case ${EX}</small></h3>${inner}</div>`;
+
+const ASK = {
+  tumbler: 'For each pin from the left: its number, its COLOR, and whether it shows a SKULL.',
+  glyphs: 'Describe the 4 glyphs one at a time. Say which key position each one is on.',
+  fuse: 'How many wires? Then for each wire from the top: its COLOR, and whether it has a TAG. If it does, read the word.',
+  switch: 'Read me the 6 letters on the panel, from the left.',
+  iron: 'For each pin from the right: its number, its COLOR, and whether it shows a MOON.',
+  numpad: 'Read me the 4 NUMBERS on the pad.',
+  gas: 'For each valve from A to D: is the handle RED?',
+  relay: 'Is the lamp above the board lit? Which toggles are down?',
+  vault: 'Read me the LEFT, CENTER and RIGHT clue numbers.',
+};
 
 const NOTE = {
   tumbler: 'He oiled these himself. They still stick.',
@@ -38,7 +60,7 @@ const DECOY = {
       '1. Count pins showing a MOON. Call it M.',
       '2. M = 0: pick pins by color: WHITE, YELLOW, BLUE, RED.',
       '   M = 1 or more: pick the MOON pins first, then the rest left to right.',
-      '3. LAST DIGIT 7 or more: reverse the whole order.',
+      '3. ROOM 7 or more: reverse the whole order.',
     ],
   },
   numpad: {
@@ -77,7 +99,7 @@ const DECOY = {
       '   Vowel (A, E): RIGHT clue first, then CENTER, then LEFT.',
       '   Consonant: LEFT clue first, then RIGHT, then CENTER.',
       '2. Look up base numbers in the secondary vault index.',
-      '3. If SERIAL is even, subtract LAST digit from each number.',
+      '3. If SERIAL is even, subtract ROOM digit from each number.',
       '4. Spin to each number in order and pull the release lever.',
     ],
   },
@@ -133,17 +155,19 @@ const EXTRA = {
   fuse: fuseEx,
   switch: () => switchTablesHtml() + switchEx(),
 };
-const door = (k, cls = '') => `<article class="door ${cls}"><div class="plate-row"><h2 class="plate">${plateOf(k)}</h2><p class="note">${NOTE[k]}</p></div>${lines(rulesOf(k))}${EXTRA[k] ? EXTRA[k]() : ''}</article>`;
+const door = (k, cls = '') => `<article class="door ${cls}"><div class="plate-row"><h2 class="plate">${plateOf(k)}</h2><p class="note">${NOTE[k]}</p></div>${ask(ASK[k])}${lines(rulesOf(k))}${EXTRA[k] ? EXTRA[k]() : ''}</article>`;
 const duo = (a, b) => `<div class="duo">${door(a, 'half')}${door(b, 'half')}</div>`;
 
 // Which door sections share a page. Real doors and look-alikes are mixed on purpose.
 // Page numbers in the index are derived from this, so they cannot drift.
 const FIRST_DOOR_PAGE = 3;
 const LAYOUT = [
-  ['tumbler', 'iron', 'fuse'],
-  ['glyphs', ['numpad', 'vault']],
+  ['fuse', ['numpad', 'vault']],
+  ['glyphs'],
   ['switch', ['gas', 'relay']],
+  ['tumbler', 'iron'], // lightest page, so it has room for the closing thank-you block
 ];
+const THANKS_ON = LAYOUT.length - 1; // the thank-you block closes the manual, so it rides on the LAST page
 export const MANUAL_PAGES = FIRST_DOOR_PAGE - 1 + LAYOUT.length;
 
 const logo = (cls = '') => `<img class="logo ${cls}" data-logo alt="${STUDIO} logo" src="">`;
@@ -179,23 +203,27 @@ const cover = () => `
 const howto = () => `
   <h2 class="sec first">HOW TO PLAY AS THE HANDLER</h2>
   <ol class="how">
-    <li>Ask your partner to read the <b>CASE CODE</b> aloud, as four fields. Write them in the margin.</li>
-    <li>Ask for the <b>PLATE NAME</b> on the lock in front of them. Find that page. The name must match exactly.</li>
-    <li>Follow the rules <b>top to bottom</b>. Ask the questions you need to answer them.</li>
-    <li>Give <b>one instruction at a time</b> and wait for them to say it is done.</li>
+    <li>Ask your partner to read the <b>CASE CODE</b> aloud and jot it down.</li>
+    <li>Ask for the <b>PLATE NAME</b> on the lock in front of them. Find that page. The name must match <b>exactly</b>.</li>
+    <li>Read the <b>ASK YOUR PARTNER</b> line. Get every answer before you start the steps.</li>
+    <li>Do the <b>STEPS</b> in number order. Give <b>one instruction at a time</b> and wait for "done".</li>
     <li>When a door opens they read you a new plate name. Repeat until all four are open.</li>
   </ol>
-  <h2 class="sec">THE CASE CODE</h2>
-  <div class="boxes"><div><small>LETTER</small>K</div><div><small>SERIAL</small>7</div><div><small>LAST</small>3</div><div><small>COLOR</small>RED</div></div>
-  <p class="note">Example: <b>K7-3-RED</b>. Rules always name the field they mean, so "SERIAL odd" is about the 7 and "LAST DIGIT odd" is about the 3. The worked examples in this manual all use this code. A new code is dealt every run, so never reuse an old answer.</p>
+  <p class="note">Example: <b>K7-3-RED</b> is said as: letter <b>K</b>, serial <b>7</b>, room <b>3</b>, color <b>RED</b>. "SERIAL odd" is about the 7. "ROOM odd" is about the 3. The worked examples in this manual use this code. A new code is dealt every run.</p>
+  <h2 class="sec">HOW TO READ A RULE</h2>
+  <ul class="guide">
+    <li><b>Steps run top to bottom.</b> Finish step 1 before step 2.</li>
+    <li><b>CAPITAL WORDS</b> are things to look up: a case code field, or something your partner can see. Ask for it.</li>
+    <li><b>LEFT, RIGHT, TOP</b> are as your partner sees the screen. <b>TOPMOST</b> means the one nearest the top.</li>
+    <li><b>Odd</b> = 1 3 5 7 9. <b>Even</b> = 2 4 6 8. <b>Vowel</b> = A or E.</li>
+    <li><b>Say numbers, not colors.</b> "Tap pin 3", not "tap the red one".</li>
+  </ul>
   <div class="split">
     <div>
       <h2 class="sec">FIND YOUR PAGE</h2>
       ${index()}
     </div>
     <div>
-      <h2 class="sec">AT A GLANCE</h2>
-      <table class="idx"><tr><th>VOWEL LETTERS</th><td>A E</td></tr><tr><th>ODD DIGITS</th><td>1 3 5 7 9</td></tr><tr><th>EVEN DIGITS</th><td>2 4 6 8</td></tr><tr><th>COLORS</th><td>RED · BLUE<br>YELLOW · WHITE</td></tr></table>
       <h2 class="sec">TALK LIKE A PRO</h2>
       <ul class="tips">
         <li>Spell letters with a word: "B as in Bravo". B and D, M and N sound alike.</li>
@@ -222,7 +250,7 @@ export function buildManual({ color = false } = {}) {
     { cls: '', html: howto() },
     ...LAYOUT.map((p, i) => ({
       cls: '',
-      html: p.map((k) => (Array.isArray(k) ? duo(...k) : door(k))).join('') + (i === LAYOUT.length - 1 ? thanks() : ''),
+      html: p.map((k) => (Array.isArray(k) ? duo(...k) : door(k))).join('') + (i === THANKS_ON ? thanks() : ''),
     })),
   ];
   const n = pages.length;

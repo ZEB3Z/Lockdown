@@ -52,7 +52,7 @@ export function applyTheme(theme) {
 }
 
 const fx = {
-  reduced: qs.get('gentle') === '1',
+  reduced: (typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches) || qs.get('gentle') === '1',
 };
 
 let wake = null;
@@ -92,20 +92,35 @@ function showMenu(app) {
   app.className = '';
   app.innerHTML = `
     <section class="screen start menu">
-      <h1>LOCK<br>DOWN</h1>
-      <p class="tagline">BLACKTHORN MANOR</p>
-      <p class="warn"><b>WARNING</b> This game contains jump scares, sudden loud sounds, and flickering light.</p>
-      <label class="opt"><input type="checkbox" id="gentle" ${fx.reduced ? 'checked' : ''}> GENTLE MODE (no strobes, no full blackouts, softer audio)</label>
-      <label class="opt"><input type="checkbox" id="snd" ${muted ? 'checked' : ''}> Sound off (staff testing)</label>
-      <div class="theme-row">
-        <button type="button" class="theme-btn" id="start-theme">${currentTheme === 'light' ? 'LIGHTS ON' : 'LIGHTS OUT'}</button>
+      <div class="fog" aria-hidden="true"></div>
+      <div class="menu-hero">
+        ${logoImg('menu-logo')}
+        <h1>LOCK<br>DOWN</h1><i class="drips"></i>
+        <p class="tagline"><span>BLACKTHORN MANOR</span></p>
+        <p class="pitch">TWO PLAYERS · ONE SCREEN · ONE MANUAL</p>
       </div>
-      <div class="menu-btns">
-        <button class="big" id="go">ENTER THE HOUSE</button>
-        <a class="big alt" id="escapee" href="/escapee/">ESCAPEE'S INSTRUCTIONS</a>
+      <div class="menu-panel">
+        <ol class="how3">
+          <li><b>ESCAPEE</b>holds this device</li>
+          <li><b>HANDLER</b>reads the manual</li>
+          <li><b>TALK</b>never show screens</li>
+        </ol>
+        <p class="menu-warn"><b>WARNING</b> Contains jump scares, sudden loud sounds and flickering light. Gentle Mode is below.</p>
+        <div class="menu-btns">
+          <button class="big" id="go">ENTER THE HOUSE</button>
+          <a class="big alt" id="escapee" href="/escapee/">ESCAPEE'S INSTRUCTIONS</a>
+        </div>
+        <div class="settings">
+          <div class="chips">
+            <label class="chip"><input type="checkbox" id="gentle" ${fx.reduced ? 'checked' : ''}><span>GENTLE MODE</span></label>
+            <label class="chip"><input type="checkbox" id="snd" ${muted ? 'checked' : ''}><span>SOUND OFF</span></label>
+            <button type="button" class="chip theme-btn" id="start-theme">${currentTheme === 'light' ? 'LIGHTS ON' : 'LIGHTS OUT'}</button>
+          </div>
+          <p class="hint">Gentle Mode: no strobes, no full blackouts, softer audio.</p>
+        </div>
         <button type="button" class="link-btn" id="credits">CREDITS</button>
       </div>
-      ${brandFooter()}
+      <footer class="brand"><span>A game by <b>${STUDIO}</b></span></footer>
     </section>
   `;
 
@@ -115,6 +130,11 @@ function showMenu(app) {
     applyTheme(next);
     themeBtn.textContent = next === 'light' ? 'LIGHTS ON' : 'LIGHTS OUT';
   };
+
+  const gentleBox = app.querySelector('#gentle');
+  const syncGentle = () => app.classList.toggle('reduced', gentleBox.checked);
+  gentleBox.onchange = syncGentle;
+  syncGentle();
 
   app.querySelector('#credits').onclick = () => showCredits(app);
 
@@ -166,11 +186,12 @@ function play(app) {
         <div class="prox"><i></i></div>
       </header>
       <div class="case">
-        ${[['LETTER', c.letter], ['SERIAL', c.serial], ['LAST', c.last], ['COLOR', c.color]]
+        ${[['LETTER', c.letter], ['SERIAL', c.serial], ['ROOM', c.room], ['COLOR', c.color]]
           .map(([k, v]) => `<div><small>${k}</small><b>${v}</b></div>`).join('')}
       </div>
       <div class="plateRow">
         <span class="door"></span>
+        <span class="plateLbl">LOCK · READ THE PLATE NAME ALOUD</span>
         <h2 class="plate"></h2>
         <div class="hud-controls">
           <button type="button" class="theme-btn" id="hud-theme">${currentTheme === 'light' ? 'LIGHTS ON' : 'LIGHTS OUT'}</button>
@@ -425,7 +446,7 @@ function play(app) {
       ? `<section class="screen end win"><h1>ESCAPED</h1><div class="big-time">${mmss(rem)}</div><p>TIME REMAINING</p>
           <div class="end-btns"><button class="big" id="again">PLAY AGAIN</button><button class="big alt" id="menu">MAIN MENU</button></div>
           <p class="thanks">Thank you for playing LOCKDOWN.</p>${brandFooter()}</section>`
-      : `<section class="screen end lose"><h1>HE FOUND YOU</h1><p>${run.strikes >= CONFIG.maxStrikes ? 'Too much noise.' : 'Time ran out.'}</p>
+      : `<section class="screen end lose">${V.faceSvg()}<p class="signal">● SIGNAL LOST</p><h1>HE FOUND YOU</h1><i class="drips"></i><p>${run.strikes >= CONFIG.maxStrikes ? 'Too much noise.' : 'Time ran out.'}</p>
           <div class="end-btns"><button class="big" id="again">TRY AGAIN</button><button class="big alt" id="menu">MAIN MENU</button></div>
           <p class="thanks">Thank you for playing LOCKDOWN.</p>${brandFooter()}</section>`;
 

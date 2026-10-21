@@ -6,7 +6,7 @@ The validator proves the rules are consistent. Only people prove they are fast a
 **Day 1: verify, scare audit, and hardware baseline**
 - Deploy v3. Run checklists on low-end Android and iPhone (audio, vibration, wake lock, grain smoothness, layout, offline reload).
 - **Scare audit pass:** A team member plays through on a cheap Android using speaker audio and wired/wireless headphones. Listen at 80% volume: log anything piercing, painful, unfair, or disorienting. Verify no scare covers puzzle controls for >0.6s.
-- Print the 5-page manual, read every page aloud, check the glyph columns and start-number table in dim booth light.
+- Print the 6-page manual, read every page aloud, check the glyph columns and start-number table in dim booth light.
 - Team runs 6+ pairs (swap roles). Check mistimed-flip and wrong-switch rates on Execution Switch.
 
 **Day 2: naive pairs + tuning**
@@ -16,7 +16,7 @@ The validator proves the rules are consistent. Only people prove they are fast a
 
 **Day 3: freeze and rehearse**
 - Morning: final parameter tuning, then **code freeze**. Tag commit `v3.0-final`.
-- Print final manuals (5 pages), QR codes, facilitator sheets. Preload loaners.
+- Print final manuals (6 pages), QR codes, facilitator sheets. Preload loaners.
 - Full booth rehearsal (booth lighting and crowd ambient noise): 3 pairs start to finish.
 - Brief staff on the facilitator sheet; review tap-out / guest distress procedures.
 

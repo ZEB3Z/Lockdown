@@ -4,17 +4,15 @@ export const plate = 'BRASS TUMBLER';
 export const PIN_COUNT = 5;
 export const PIN_COLORS = ['RED', 'BLUE', 'YELLOW', 'WHITE'];
 export const SYMBOLS = ['moon', 'eye', 'key', 'hand']; // cosmetic; 'skull' is the only rule symbol
-export const BRANCHES = ['N0', 'N1', 'N2+', 'skull', 'ltr', 'rtl'];
+export const BRANCHES = ['color', 'nocolor', 'skull', 'ltr', 'rtl'];
 
 // Manual text. The manual page renders these lines verbatim.
+// Three decisions only: where the SKULL goes, which DIRECTION to read, which pins go first by COLOR.
 export const RULES = [
-  'Pins are numbered 1-5, LEFT to RIGHT. Tap them in the order below.',
-  '1. A pin showing the SKULL is set aside. It is picked LAST.',
-  '2. Count the OTHER pins whose color = the case code COLOR. Call it N.',
-  '3. LAST DIGIT odd: direction is LEFT to RIGHT. LAST DIGIT even: RIGHT to LEFT.',
-  '4. N = 0: pick all pins in direction order.',
-  '   N = 1: pick the COLOR pin first, then the rest in direction order.',
-  '   N = 2 or more: pick all NON-COLOR pins in direction order, then the COLOR pins in direction order.',
+  'Pins are numbered 1-5, LEFT to RIGHT. Tap all 5 pins in the order below.',
+  '1. SKULL: a pin showing the SKULL is tapped at the very END. Set it aside for now.',
+  '2. DIRECTION: ROOM odd: read the other pins LEFT to RIGHT. ROOM even: read them RIGHT to LEFT.',
+  '3. COLOR: in that reading order, tap the pins matching the case COLOR first. Then tap the rest. Then tap the SKULL pin.',
 ];
 
 /** state = { pins: [{ color, symbol }] }  (index 0 = leftmost) */
@@ -31,16 +29,13 @@ export function trace(state, ctx) {
   const all = state.pins.map((_, i) => i);
   const skull = all.filter((i) => state.pins[i].symbol === 'skull');
   const rest = all.filter((i) => !skull.includes(i));
-  const dir = ctx.lastOdd ? rest : rest.slice().reverse();
+  const dir = ctx.roomOdd ? rest : rest.slice().reverse();
   const isC = (i) => state.pins[i].color === ctx.color;
-  const n = rest.filter(isC).length;
-  let order, b;
-  if (n === 0) { order = dir; b = 'N0'; }
-  else if (n === 1) { order = [...dir.filter(isC), ...dir.filter((i) => !isC(i))]; b = 'N1'; }
-  else { order = [...dir.filter((i) => !isC(i)), ...dir.filter(isC)]; b = 'N2+'; }
-  const branches = [b, ctx.lastOdd ? 'ltr' : 'rtl'];
+  const colored = dir.filter(isC);
+  const plain = dir.filter((i) => !isC(i));
+  const branches = [colored.length ? 'color' : 'nocolor', ctx.roomOdd ? 'ltr' : 'rtl'];
   if (skull.length) branches.push('skull');
-  return { steps: [...order, ...skull], branches };
+  return { steps: [...colored, ...plain, ...skull], branches };
 }
 
 export const solve = (state, ctx) => trace(state, ctx).steps;

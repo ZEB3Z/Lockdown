@@ -13,7 +13,7 @@
   --c-blue: #2f6fd6;
   --c-yellow: #d8b61a;
   --c-white: #e8e8e8;
-  --vig-color: rgba(0, 0, 0, 0.88);
+  --vig-color: rgba(0, 0, 0, 0.5);
   --grain-opacity: 0.08;
   --hud-bg: rgba(5, 5, 5, 0.9);
 }
@@ -34,7 +34,7 @@
   --c-blue: #407ee6;
   --c-yellow: #e5c324;
   --c-white: #f5f2e6;
-  --vig-color: rgba(20, 16, 7, 0.90);
+  --vig-color: rgba(20, 16, 7, 0.5);
   --grain-opacity: 0.12;
   --hud-bg: rgba(40, 35, 20, 0.92);
 }
@@ -126,10 +126,11 @@ a.big.alt { border-color: var(--line-strong); background: transparent; }
 .case b { font-size: 18px; color: var(--ink-bright); }
 
 .plateRow { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; border-top: 1px solid var(--line); padding-top: 6px; }
-.door { order: 1; font-size: 11px; color: var(--dim); }
+.door { order: 1; font-size: 13px; font-weight: bold; letter-spacing: .1em; color: var(--ink-bright); }
 .hud-controls { order: 2; margin-left: auto; display: flex; gap: 6px; align-items: center; }
 .mute { font-size: 10px; padding: 4px 8px; color: var(--dim); }
-.plate { order: 3; flex: 1 0 100%; margin: 0; font-size: 20px; line-height: 1.1; letter-spacing: .12em; color: var(--red); }
+.plateLbl { order: 3; flex: 1 0 100%; margin-bottom: -2px; font-size: 10px; letter-spacing: .12em; color: var(--dim); }
+.plate { order: 4; flex: 1 0 100%; margin: 0; font-size: 20px; line-height: 1.1; letter-spacing: .12em; color: var(--red); }
 .plate.glitch { animation: glitch .3s steps(2); }
 @keyframes glitch { 0% { transform: translate(-2px, 1px); filter: hue-rotate(90deg); } 50% { transform: translate(3px, -1px); } 100% { transform: none; } }
 
@@ -254,3 +255,5 @@ button.done { opacity: .3; }
 #fx.reduced .grain, #fx.reduced .killer { animation: none; }
 #fx.reduced .lunge, #fx.reduced .glass-slam, #fx.reduced .face-glass, #fx.reduced .blackout-cone { display: none; }
 #fx.low-quality .grain { display: none; }
+
+.wire em.tag { color: #1a1205; }

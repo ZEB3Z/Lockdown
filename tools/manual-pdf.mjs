@@ -1,4 +1,4 @@
-// node tools/manual-pdf.mjs  ->  docs/print/LOCKDOWN-Handlers-Manual-BW.pdf and -Color.pdf  (A4, 5 pages)
+// node tools/manual-pdf.mjs  ->  docs/print/LOCKDOWN-Handlers-Manual-BW.pdf and -Color.pdf  (A4, 6 pages)
 // Renders the same manual the game ships (src/manual/build.js + manual.css + the logo) in headless Chromium.
 // Needs Playwright, which is NOT a project dependency:  npm i -D playwright && npx playwright install chromium
 // (If Playwright is installed globally, set PLAYWRIGHT_PATH to its folder.)

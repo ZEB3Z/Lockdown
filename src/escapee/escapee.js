@@ -11,6 +11,7 @@ try {
 
 // The Escapee never sees the rules. This page only says how to describe things and how to operate each lock.
 document.getElementById('root').innerHTML = `
+  <div class="grain"></div><div class="rec"><i></i><span>REC · ESCAPEE CAM</span></div>
   <a class="back" href="/">← MAIN MENU</a>
   <header class="hero">
     <img class="logo" src="${LOGO_URL}" alt="${STUDIO} logo" draggable="false">
@@ -28,7 +29,7 @@ document.getElementById('root').innerHTML = `
     <ol>
       <li>Sit so your partner <b>cannot see your phone</b>.</li>
       <li>Tap <b>ENTER THE HOUSE</b>. The clock starts at once.</li>
-      <li>Read your <b>CASE CODE</b> aloud as four fields: <b>LETTER, SERIAL, LAST, COLOR</b>. Example: "K, 7, 3, red".</li>
+      <li>Read your <b>CASE CODE</b> aloud as four fields: <b>LETTER, SERIAL, ROOM, COLOR</b>. Example: "K, 7, room 3, red".</li>
       <li>Read the <b>PLATE NAME</b> on the door. Say it exactly, every word.</li>
     </ol>
   </section>
@@ -49,7 +50,7 @@ document.getElementById('root').innerHTML = `
   <section class="card lock">
     <div class="plate">BRASS TUMBLER</div>
     <p class="see"><b>You see:</b> a row of pins. Each has a number, a color and a symbol.</p>
-    <p class="say"><b>Tell them:</b> pin numbers, colors, and which pins show a symbol. Say the symbol too (moon, skull and so on).</p>
+    <p class="say"><b>Tell them:</b> for each pin from the left: its number, its color, and whether it shows a <b>skull</b>. Say "no skull" if none does.</p>
     <p class="do"><b>You do:</b> tap the pins in the exact order they give you.</p>
   </section>
 
@@ -62,8 +63,8 @@ document.getElementById('root').innerHTML = `
 
   <section class="card lock">
     <div class="plate">FUSE BOX</div>
-    <p class="see"><b>You see:</b> a set of wires from top to bottom. Each has a number, a color and sometimes a label.</p>
-    <p class="say"><b>Tell them:</b> every wire's number, color and label, top to bottom. Do not skip the plain ones.</p>
+    <p class="see"><b>You see:</b> a set of wires from top to bottom. Each has a number and a color. Some have a <b>paper tag</b> with a word on it. The rest say <b>NO TAG</b>.</p>
+    <p class="say"><b>Tell them:</b> how many wires there are. Then, top to bottom: the color, and "tag" or "no tag". For a tag, read the word aloud.</p>
     <p class="do"><b>You do:</b> cut only the wire they name. One cut.</p>
   </section>
 

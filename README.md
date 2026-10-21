@@ -53,7 +53,7 @@ One player is locked inside. The other holds the only manual.
 | Role | Holds | Sees | Responsibility |
 |---|---|---|---|
 | **The Escapee** | A phone, opened by QR code | The four locks, case code, clock, killer proximity | Describes what is on screen and operates the locks on instruction |
-| **The Handler** | A printed A4 manual (5 pages) | The manual only, **never the screen** | Reads the rules, asks questions, gives one instruction at a time |
+| **The Handler** | A printed A4 manual (6 pages) | The manual only, **never the screen** | Reads the rules, asks questions, gives one instruction at a time |
 
 ### Anatomy of a Run
 
@@ -135,7 +135,7 @@ npm run dev
 | `http://localhost:5173/?theme=light` | Preview the "Lights On" theme |
 | `http://localhost:5173/?gentle=1` | Preview Gentle Mode |
 | `http://localhost:5173/escapee/` | Escapee's instructions page (the main menu links here), with a **MAIN MENU** link back |
-| `http://localhost:5173/manual/` | Rendered 5-page manual, with a **MAIN MENU** link back to the game |
+| `http://localhost:5173/manual/` | Rendered 6-page manual, with a **MAIN MENU** link back to the game |
 | `http://localhost:5173/admin/?case=K7-3-RED` | 4-module answer key |
 | `http://localhost:5173/facilitator/` | 1-page booth briefing sheet |
 
@@ -173,15 +173,18 @@ node tools/manual-pdf.mjs
 
 See the file header for the one extra dependency it needs.
 
-**Manual contents (5 pages, all A4, no door split across pages)**
+**Manual contents (6 pages, all A4, no door split across pages)**
 
 | Page | Content |
 |:-:|---|
 | 1 | Cover with the D'SAITECH logo, what the game is, the two roles, the clock and strikes |
-| 2 | How to play as the Handler, the case code explained, page finder, quick reference, talking tips |
-| 3 | **BRASS TUMBLER**, IRON TUMBLER *(look-alike)*, **FUSE BOX** |
-| 4 | **GLYPH PAD** (6 columns of 6 glyphs), NUMBER PAD and VAULT WHEEL *(look-alikes)* |
-| 5 | **EXECUTION SWITCH** (with a COLOR start table), GAS VALVE and RELAY BOARD *(look-alikes)*, thank-you and credits |
+| 2 | How to play as the Handler, how to read a rule, page finder, talking tips |
+| 3 | **FUSE BOX**, NUMBER PAD and VAULT WHEEL *(look-alikes)* |
+| 4 | **GLYPH PAD** (6 columns of 6 glyphs) |
+| 5 | **EXECUTION SWITCH** (with a COLOR start table), GAS VALVE and RELAY BOARD *(look-alikes)* |
+| 6 | **BRASS TUMBLER**, IRON TUMBLER *(look-alike)*, thank-you and credits (always the last page) |
+
+Every door section starts with an **ASK YOUR PARTNER** line (what to get from the Escapee), then numbered **STEPS**. Page 2 has a short "how to read a rule" guide.
 
 > [!TIP]
 > If edited rule text spills past a page frame, that page gets a red outline at `/manual/`. Shorten the text or move a block in `LAYOUT` (`src/manual/build.js`).
@@ -191,7 +194,7 @@ Also print `/facilitator/` (1 page) for the booth table.
 ### Booth Checklist
 
 - [ ] 2 loaner phones preloaded with the game, volume at 80%, silent switch off, Auto-Lock disabled
-- [ ] 1 printed manual (5 pages) per station, plus 2 spare copies
+- [ ] 1 printed manual (6 pages) per station, plus 2 spare copies
 - [ ] Facilitator sheet on the table
 - [ ] QR code printed at 8 cm or larger
 - [ ] Offline mode verified on every loaner phone
@@ -244,7 +247,7 @@ lockdown/
 │  │  └─ engine.js           unified audio facade
 │  ├─ scare/
 │  │  └─ director.js         intensity curve, beat scheduler, cooldowns
-│  ├─ manual/                5-page A4 manual builder + manual.css
+│  ├─ manual/                6-page A4 manual builder + manual.css
 │  └─ admin/                 4-module answer key
 ├─ tools/
 │  ├─ validate.mjs           exhaustive 3,888-case validator
@@ -269,7 +272,7 @@ lockdown/
 |---|:-:|:-:|
 | LETTER | `K` | 12 |
 | SERIAL | `7` | 1 to 9 |
-| LAST | `3` | 1 to 9 |
+| ROOM | `3` | 1 to 9 |
 | COLOR | `RED` | 4 |
 
 ### The Four Locks
@@ -279,7 +282,7 @@ lockdown/
 <td width="50%" valign="top">
 
 #### 1. Brass Tumbler
-Five pins. The skull pin is always picked last. Count **N**, the number of pins matching the case COLOR. If LAST is odd, work left to right. If LAST is even, work right to left. The pick order is determined by **N**.
+Five pins, three decisions. (1) A pin showing the SKULL is tapped at the very end. (2) ROOM odd: read the other pins left to right; ROOM even: right to left. (3) In that order, tap the pins matching the case COLOR first, then the rest, then the skull.
 
 </td>
 <td width="50%" valign="top">
@@ -293,7 +296,7 @@ Four glyphs on screen. Locate the single manual column, out of six, that contain
 <td width="50%" valign="top">
 
 #### 3. Fuse Box
-Three to six wires. Cut rules branch on wire count, warning tags, LAST digit parity, vowel letter, and case color.
+Three to six wires. Cut rules branch on wire count, paper tags (every wire shows a clear TAG or NO TAG), ROOM parity, vowel letter, and case color.
 
 </td>
 <td width="50%" valign="top">
@@ -338,7 +341,7 @@ Defined in `src/config.js`.
 
 | Command | What it does |
 |---|---|
-| `npm run validate` | Tests all 3,888 case codes across all four modules against an independent reference interpreter. Verifies there are no dead rules, runs statistical sanity checks, and confirms the 5-page manual contains every rule line verbatim plus the D'SAITECH credit and logo. |
+| `npm run validate` | Tests all 3,888 case codes across all four modules against an independent reference interpreter. Verifies there are no dead rules, runs statistical sanity checks, and confirms the 6-page manual contains every rule line verbatim plus the D'SAITECH credit and logo. |
 | `npm run smoke` | Simulates perfect play and a 3-strike failure in JSDOM. Covers the main menu, the credits screen, and every route back to the menu. Verifies flash limiter rules and confirms that mid-game theme toggling does not affect the clock. |
 | `npm run build` | Validates, then produces the production build in `dist/`. |
 | `npm test` | Runs the validator and the smoke test together. |
@@ -396,7 +399,7 @@ Defined in `src/config.js`.
 
 - Mathematical determinism and a single-solution guarantee across all 3,888 seeds for all four modules
 - Concordance with an independent reference implementation
-- 5-page A4 manual print structure, with a page-overflow guard on `/manual/`
+- 6-page A4 manual print structure, with a page-overflow guard on `/manual/`
 
 ### Requires On-Site Hardware Verification
 

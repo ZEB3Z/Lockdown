@@ -39,7 +39,7 @@ function show(str) {
   $('#c').value = ctx.code;
   $('#out').innerHTML = `
     <h2>${ctx.code}</h2>
-    <div class="dim">LETTER ${ctx.letter} · SERIAL ${ctx.serial} · LAST ${ctx.last} · COLOR ${ctx.color}</div>
+    <div class="dim">LETTER ${ctx.letter} · SERIAL ${ctx.serial} · ROOM ${ctx.room} · COLOR ${ctx.color}</div>
     <p><a href="../?case=${ctx.code}&debug">Open game with this case (debug mode)</a></p>
     ${plan.doors.map((d, i) => {
       const m = MODULES[d.id];

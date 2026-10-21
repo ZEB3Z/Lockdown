@@ -1,4 +1,4 @@
-// Case code: K7-3-RED  = LETTER + SERIAL digit - LAST digit - COLOR
+// Case code: K7-3-RED  = LETTER + SERIAL digit - ROOM digit - COLOR
 export const LETTERS = 'ABCDEFGHJKMN'.split('');      // no I L O Q (misread aloud)
 export const VOWELS = ['A', 'E'];
 export const COLORS = ['RED', 'BLUE', 'YELLOW', 'WHITE'];
@@ -8,8 +8,8 @@ export const CODE_COUNT = LETTERS.length * DIGITS.length * DIGITS.length * COLOR
 
 const RE = /^([ABCDEFGHJKMN])([1-9])-([1-9])-(RED|BLUE|YELLOW|WHITE)$/;
 
-export function formatCode(letter, serial, last, color) {
-  return `${letter}${serial}-${last}-${color}`;
+export function formatCode(letter, serial, room, color) {
+  return `${letter}${serial}-${room}-${color}`;
 }
 
 /** Returns the case context used by every module, or null if the code is invalid. */
@@ -17,13 +17,13 @@ export function parseCode(str) {
   const m = RE.exec(String(str).trim().toUpperCase());
   if (!m) return null;
   const [, letter, s, l, color] = m;
-  const serial = +s, last = +l;
+  const serial = +s, room = +l;
   return {
-    code: formatCode(letter, serial, last, color),
-    letter, serial, last, color,
+    code: formatCode(letter, serial, room, color),
+    letter, serial, room, color,
     vowel: VOWELS.includes(letter),
     serialOdd: serial % 2 === 1,
-    lastOdd: last % 2 === 1,
+    roomOdd: room % 2 === 1,
   };
 }
 

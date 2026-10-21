@@ -4,24 +4,17 @@
 import { COLUMNS } from '../src/modules/glyphs/columns.js';
 
 const parse = (code) => {
-  const [head, last, color] = code.split('-');
-  return { letter: head[0], serial: Number(head[1]), last: Number(last), color };
+  const [head, room, color] = code.split('-');
+  return { letter: head[0], serial: Number(head[1]), room: Number(room), color };
 };
 
 export function refTumbler(state, code) {
-  const { last, color } = parse(code);
-  const ltr = last % 2 === 1;
+  const { room, color } = parse(code);
   const pins = state.pins;
-  const normal = pins.map((p, i) => i).filter((i) => pins[i].symbol !== 'skull');
-  const N = normal.filter((i) => pins[i].color === color).length;
-  const group = (i) => {
-    if (pins[i].symbol === 'skull') return 9;
-    const c = pins[i].color === color;
-    if (N === 0) return 0;
-    if (N === 1) return c ? 0 : 1;
-    return c ? 1 : 0;
-  };
-  return pins.map((_, i) => i).sort((a, b) => group(a) - group(b) || (ltr ? a - b : b - a));
+  const ltr = room % 2 === 1;
+  // rank: matching-color pins first (0), others (1), skull always at the very end (2)
+  const rank = (i) => (pins[i].symbol === 'skull' ? 2 : pins[i].color === color ? 0 : 1);
+  return pins.map((_, i) => i).sort((a, b) => rank(a) - rank(b) || (ltr ? a - b : b - a));
 }
 
 export function refGlyphs(state, code) {
@@ -34,14 +27,14 @@ export function refGlyphs(state, code) {
 }
 
 export function refFuse(state, code) {
-  const { letter, last, color } = parse(code);
+  const { letter, room, color } = parse(code);
   const wires = state.wires;
   const labeled = [], colored = [];
   wires.forEach((w, i) => { if (w.label) labeled.push(i); if (w.color === color) colored.push(i); });
   switch (wires.length) {
     case 3: return [labeled.length > 0 ? labeled[0] : 1];
     case 4:
-      if (last % 2 === 1) return [3];
+      if (room % 2 === 1) return [3];
       return [colored.length > 0 ? colored[0] : 0];
     case 5:
       if (labeled.length === 1) return [labeled[0]];
